@@ -9,7 +9,7 @@ import java.net.URL
 
 object Config {
     // Paste the Web app URL you get after deploying the Google Apps Script (Code.gs)
-    const val SCRIPT_URL = "https://rmstore.samuda-sales.workers.dev"
+    const val SCRIPT_URL = "https://rmstore.m-rafikuddin.workers.dev"
 }
 
 /**
