@@ -1,0 +1,132 @@
+name: Build APK
+on:
+  push:
+    paths-ignore:
+      - 'update*.zip'
+      - '**.md'
+  workflow_dispatch:
+
+# Needed so the build can publish the APK on the repo's Releases page.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      VERSION: 1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Makes sure the Android SDK pieces this app needs are installed and their licences accepted.
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+
+      # Signing. With the four repository secrets (README, "Signing key") the APK is signed with YOUR private key, so every
+      # new build installs over the old one as a normal update. Without them the build still runs, but with a throw-away key:
+      # that APK is named ...-TEMP-KEY.apk and can only be installed fresh (uninstall the old app first).
+      - name: Prepare signing key
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          SECRET_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SECRET_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SECRET_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          KS="$RUNNER_TEMP/signing.jks"
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$SECRET_KEYSTORE_PASSWORD" ] && [ -n "$SECRET_KEY_ALIAS" ] && [ -n "$SECRET_KEY_PASSWORD" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$KS" || { echo "::error::KEYSTORE_BASE64 is not valid base64. Re-create that secret."; exit 1; }
+            if ! keytool -list -keystore "$KS" -storepass "$SECRET_KEYSTORE_PASSWORD" -alias "$SECRET_KEY_ALIAS" > /dev/null 2>&1; then
+              echo "::error::The signing key could not be opened. Check the secrets KEYSTORE_BASE64, KEYSTORE_PASSWORD and KEY_ALIAS."
+              exit 1
+            fi
+            {
+              echo "KEYSTORE_FILE=$KS"
+              echo "KEYSTORE_PASSWORD=$SECRET_KEYSTORE_PASSWORD"
+              echo "KEY_ALIAS=$SECRET_KEY_ALIAS"
+              echo "KEY_PASSWORD=$SECRET_KEY_PASSWORD"
+              echo "APK_SUFFIX="
+            } >> "$GITHUB_ENV"
+            echo "### 🔐 Signed with your private key" >> "$GITHUB_STEP_SUMMARY"
+          else
+            keytool -genkeypair -keystore "$KS" -storepass tempbuildkey -keypass tempbuildkey -alias temp \
+              -keyalg RSA -keysize 2048 -validity 1000 -dname "CN=Temporary build key" > /dev/null 2>&1
+            {
+              echo "KEYSTORE_FILE=$KS"
+              echo "KEYSTORE_PASSWORD=tempbuildkey"
+              echo "KEY_ALIAS=temp"
+              echo "KEY_PASSWORD=tempbuildkey"
+              echo "APK_SUFFIX=-TEMP-KEY"
+            } >> "$GITHUB_ENV"
+            echo "::warning::Signing secrets are missing, so this APK uses a temporary key and cannot update an installed app. Add the four secrets (README, Signing key)."
+            {
+              echo "### ⚠️ Temporary signing key"
+              echo "The four signing secrets are not set, so this APK is signed with a throw-away key. Android will not install it over an existing copy of the app: uninstall the old app first. Add the secrets (README → Signing key) so future builds update normally."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # verCode = the run number, so every build is a higher version than the one before (1.0.<run number>).
+      - name: Build release APK
+        shell: bash
+        run: gradle assembleRelease -PverCode=${{ github.run_number }} --stacktrace --console=plain 2>&1 | tee build.log
+
+      # Only when the build fails: put the REAL error at the top of the run page.
+      - name: Show the real error
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "## ❌ Build failed - the real error"
+            echo
+            echo '```'
+            grep -E '^e: |error: |AAPT|Execution failed|Could not |not found|licen' build.log | head -25 || true
+            echo
+            sed -n '/What went wrong/,/\* Try/p' build.log | head -30 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^e: |error: |AAPT' build.log | head -10 | while IFS= read -r line; do echo "::error::${line}"; done || true
+
+      - name: Save full log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+
+      - name: Name the APK with its version
+        shell: bash
+        run: |
+          NAME="RM-Store-Attendance-v${VERSION}${APK_SUFFIX:-}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$NAME"
+          echo "APK_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Summary
+        run: echo "### ✅ Built version ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.APK_NAME }}
+          if-no-files-found: error
+
+      # Also publishes the APK on the repo's "Releases" page - easiest place to download from a phone.
+      # Temporary-key builds are saved as a DRAFT release (only you can see it): GitHub repos with immutable releases
+      # refuse files on a pre-release, but accept them on a draft.
+      - name: Publish release
+        continue-on-error: true
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: RM Store Attendance v${{ env.VERSION }}${{ env.APK_SUFFIX != '' && ' (temporary key)' || '' }}
+          draft: ${{ env.APK_SUFFIX != '' }}
+          files: ${{ env.APK_NAME }}

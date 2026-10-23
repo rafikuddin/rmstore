@@ -1,0 +1,81 @@
+name: Update Wiki
+# Upload a zip of the wiki pages (any name that contains "wiki", for example RM-Store-wiki.zip) to the main folder of the repository.
+# This workflow unpacks it, replaces the content of the GitHub Wiki with it, and removes the zip from the repository.
+on:
+  push:
+    paths: ['*wiki*.zip']
+  workflow_dispatch:
+# contents: write lets it save into this repository's wiki (a separate git repository) and remove the zip afterwards.
+permissions:
+  contents: write
+jobs:
+  wiki:
+    runs-on: ubuntu-latest
+    env:
+      WIKI_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find the wiki zip
+        id: find
+        run: |
+          shopt -s nullglob
+          zips=(*wiki*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "::error::No wiki zip found in the repo's main folder. Upload your wiki zip first (a file whose name contains 'wiki' and ends in .zip). It is removed after it is applied."
+            exit 1
+          fi
+          if [ ${#zips[@]} -gt 1 ]; then
+            echo "::error::More than one wiki zip found: ${zips[*]}. Delete the old ones and keep only the newest."
+            exit 1
+          fi
+          echo "zip=${zips[0]}" >> "$GITHUB_OUTPUT"
+          echo "Applying: ${zips[0]}"
+
+      - name: Unpack the zip
+        run: |
+          rm -rf "$RUNNER_TEMP/new" && mkdir -p "$RUNNER_TEMP/new"
+          unzip -q -o "${{ steps.find.outputs.zip }}" -d "$RUNNER_TEMP/new"
+          rm -rf "$RUNNER_TEMP/new/__MACOSX"
+          # If everything sits inside one folder, use that folder.
+          src="$RUNNER_TEMP/new"
+          while [ "$(ls -A "$src" | wc -l)" -eq 1 ] && [ -d "$src/$(ls -A "$src")" ]; do src="$src/$(ls -A "$src")"; done
+          if [ ! -f "$src/Home.md" ]; then
+            echo "::error::The zip has no Home.md. A wiki needs a Home page, so nothing was changed. Check that you uploaded the wiki zip."
+            exit 1
+          fi
+          echo "src=$src" >> "$GITHUB_ENV"
+          echo "Pages in the zip: $(ls "$src"/*.md | wc -l)"
+
+      - name: Open the wiki repository
+        run: |
+          if ! git clone --quiet "$WIKI_URL" "$RUNNER_TEMP/wiki" 2>"$RUNNER_TEMP/clone.err"; then
+            echo "::error::Could not open the wiki. (1) In the repository go to Settings > Features and tick Wiki. (2) Open the Wiki tab and tap 'Create the first page', then Save. GitHub only creates the wiki repository after the first page is saved by hand. Then run this workflow again (Actions > Update Wiki > Run workflow) - the zip is still here."
+            sed -e 's#x-access-token:[^@]*@#x-access-token:***@#' "$RUNNER_TEMP/clone.err"
+            exit 1
+          fi
+
+      - name: Replace the wiki pages
+        run: |
+          cd "$RUNNER_TEMP/wiki"
+          # The zip is the master copy: remove what is there, then copy everything from the zip.
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$src"/. .
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The wiki already matches the zip. Nothing to change."
+          else
+            git commit -q -m "Update wiki from ${{ steps.find.outputs.zip }}"
+            git push --quiet origin HEAD
+            echo "Wiki updated: $(git diff --stat HEAD~1 HEAD | tail -1)"
+          fi
+
+      - name: Remove the zip from the repository
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git rm -q -f "${{ steps.find.outputs.zip }}"
+          git commit -q -m "Wiki zip applied"
+          git push --quiet
