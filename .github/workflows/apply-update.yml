@@ -1,0 +1,41 @@
+name: Apply Update
+on:
+  push:
+    paths: ['update*.zip']
+  workflow_dispatch:
+# contents: write lets it save the unpacked files; actions: write lets it start the Build APK workflow afterwards.
+permissions:
+  contents: write
+  actions: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack the update zip
+        run: |
+          shopt -s nullglob
+          zips=(update*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "::error::No update zip found in the repo root. Upload update.zip first (it is removed after it is applied)."
+            exit 1
+          fi
+          if [ ${#zips[@]} -gt 1 ]; then
+            echo "::error::More than one update zip found: ${zips[*]}. Delete the old ones and keep only the newest."
+            exit 1
+          fi
+          echo "Applying: ${zips[0]}"
+          unzip -o "${zips[0]}" -d .
+          rm -f "${zips[0]}" app/src/main/res/layout/activity_main.xml
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Apply update" || echo "nothing to commit"
+          git push
+
+      # A push made by a workflow does not start other workflows by itself, so start Build APK explicitly.
+      # (Same as pressing Actions > Build APK > Run workflow, but automatic.)
+      - name: Start Build APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build.yml --ref "${{ github.ref_name }}"
