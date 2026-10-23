@@ -22,7 +22,7 @@ android {
     // The GitHub build passes its run number (-PverCode=N), so every build has a higher version than the last.
     def buildNumber = (project.findProperty('verCode') ?: '1').toString().toInteger()
     defaultConfig {
-        applicationId "com.example.attendance"
+        applicationId "com.rmstore.attendance"
         minSdk 24
         targetSdk 34
         versionCode buildNumber
