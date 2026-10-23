@@ -1,0 +1,7 @@
+# Never commit signing keys or local build output
+*.jks
+*.keystore
+*.p12
+local.properties
+.gradle/
+build/
