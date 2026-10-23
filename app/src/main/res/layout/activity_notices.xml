@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+<!-- Fixed top: stays in place while the page below scrolls -->
+<include layout="@layout/header_bar" />
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+    <LinearLayout android:id="@+id/noticeList" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp"
+        android:paddingTop="4dp" android:paddingBottom="24dp" />
+</ScrollView>
+<include layout="@layout/bottom_nav" />
+</LinearLayout>

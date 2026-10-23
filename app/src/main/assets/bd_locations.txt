@@ -1,0 +1,84 @@
+# Bangladesh districts and their thanas / upazilas.
+# Format:  District: Thana 1, Thana 2, Thana 3
+# One district per line. Lines starting with # are ignored. The lists are sorted automatically.
+# To add or correct a place, edit this file and rebuild the app. Do not put commas or colons inside a name.
+
+# ---- Barishal division ----
+Barguna: Amtali, Bamna, Barguna Sadar, Betagi, Patharghata, Taltali
+Barishal: Agailjhara, Airport, Babuganj, Bakerganj, Banaripara, Bandar, Barishal Sadar, Gaurnadi, Hizla, Kawnia, Kotwali, Mehendiganj, Muladi, Wazirpur
+Bhola: Bhola Sadar, Burhanuddin, Char Fasson, Daulatkhan, Lalmohan, Manpura, Tazumuddin
+Jhalokati: Jhalokati Sadar, Kathalia, Nalchity, Rajapur
+Patuakhali: Bauphal, Dashmina, Dumki, Galachipa, Kalapara, Mirzaganj, Patuakhali Sadar, Rangabali
+Pirojpur: Bhandaria, Kawkhali, Mathbaria, Nazirpur, Nesarabad, Pirojpur Sadar, Zianagar
+
+# ---- Chattogram division ----
+Bandarban: Alikadam, Bandarban Sadar, Lama, Naikhongchhari, Rowangchhari, Ruma, Thanchi
+Brahmanbaria: Akhaura, Ashuganj, Bancharampur, Bijoynagar, Brahmanbaria Sadar, Kasba, Nabinagar, Nasirnagar, Sarail
+Chandpur: Chandpur Sadar, Faridganj, Haimchar, Haziganj, Kachua, Matlab Dakshin, Matlab Uttar, Shahrasti
+Chattogram: Akbar Shah, Anwara, Bakalia, Bandar, Banshkhali, Bayazid Bostami, Boalkhali, Chandanaish, Chandgaon, Chawkbazar, Double Mooring, EPZ, Fatikchhari, Halishahar, Hathazari, Karnaphuli, Khulshi, Kotwali, Lohagara, Mirsharai, Pahartali, Panchlaish, Patenga, Patiya, Rangunia, Raozan, Sadarghat, Sandwip, Satkania, Sitakunda
+Cox's Bazar: Chakaria, Cox's Bazar Sadar, Eidgaon, Kutubdia, Maheshkhali, Pekua, Ramu, Teknaf, Ukhia
+Cumilla: Barura, Brahmanpara, Burichang, Chandina, Chauddagram, Cumilla Adarsha Sadar, Cumilla Sadar Dakshin, Daudkandi, Debidwar, Homna, Laksam, Lalmai, Meghna, Monohargonj, Muradnagar, Nangalkot, Titas
+Feni: Chhagalnaiya, Daganbhuiyan, Feni Sadar, Fulgazi, Parshuram, Sonagazi
+Khagrachhari: Dighinala, Guimara, Khagrachhari Sadar, Lakshmichhari, Mahalchhari, Manikchhari, Matiranga, Panchhari, Ramgarh
+Lakshmipur: Kamalnagar, Lakshmipur Sadar, Raipur, Ramganj, Ramgati
+Noakhali: Begumganj, Chatkhil, Companiganj, Hatiya, Kabirhat, Noakhali Sadar, Senbagh, Sonaimuri, Subarnachar
+Rangamati: Baghaichhari, Barkal, Belaichhari, Juraichhari, Kaptai, Kawkhali, Langadu, Naniarchar, Rajasthali, Rangamati Sadar
+
+# ---- Dhaka division ----
+Dhaka: Adabor, Badda, Banani, Bangshal, Bhashantek, Bimanbandar, Cantonment, Chawkbazar, Dakshinkhan, Darus Salam, Demra, Dhamrai, Dhanmondi, Dohar, Gendaria, Gulshan, Hazaribagh, Jatrabari, Kadamtali, Kafrul, Kalabagan, Kamrangirchar, Keraniganj, Khilgaon, Khilkhet, Kotwali, Lalbagh, Mirpur, Mohammadpur, Motijheel, Mugda, Nawabganj, New Market, Pallabi, Paltan, Ramna, Rampura, Sabujbagh, Savar, Shah Ali, Shahbagh, Shahjahanpur, Sher-e-Bangla Nagar, Shyampur, Sutrapur, Tejgaon, Tejgaon Industrial Area, Turag, Uttar Khan, Uttara East, Uttara West, Vatara, Wari
+Faridpur: Alfadanga, Bhanga, Boalmari, Charbhadrasan, Faridpur Sadar, Madhukhali, Nagarkanda, Sadarpur, Saltha
+Gazipur: Basan, Gachha, Gazipur Sadar, Kaliakair, Kaliganj, Kapasia, Konabari, Pubail, Sreepur, Tongi East, Tongi West
+Gopalganj: Gopalganj Sadar, Kashiani, Kotalipara, Muksudpur, Tungipara
+Kishoreganj: Austagram, Bajitpur, Bhairab, Hossainpur, Itna, Karimganj, Katiadi, Kishoreganj Sadar, Kuliarchar, Mithamain, Nikli, Pakundia, Tarail
+Madaripur: Dasar, Kalkini, Madaripur Sadar, Rajoir, Shibchar
+Manikganj: Daulatpur, Ghior, Harirampur, Manikganj Sadar, Saturia, Shivalaya, Singair
+Munshiganj: Gazaria, Lohajang, Munshiganj Sadar, Sirajdikhan, Sreenagar, Tongibari
+Narayanganj: Araihazar, Bandar, Fatullah, Narayanganj Sadar, Rupganj, Siddhirganj, Sonargaon
+Narsingdi: Belabo, Monohardi, Narsingdi Sadar, Palash, Raipura, Shibpur
+Rajbari: Baliakandi, Goalanda, Kalukhali, Pangsha, Rajbari Sadar
+Shariatpur: Bhedarganj, Damudya, Gosairhat, Naria, Shariatpur Sadar, Zajira
+Tangail: Basail, Bhuapur, Delduar, Dhanbari, Ghatail, Gopalpur, Kalihati, Madhupur, Mirzapur, Nagarpur, Sakhipur, Tangail Sadar
+
+# ---- Khulna division ----
+Bagerhat: Bagerhat Sadar, Chitalmari, Fakirhat, Kachua, Mollahat, Mongla, Morrelganj, Rampal, Sarankhola
+Chuadanga: Alamdanga, Chuadanga Sadar, Damurhuda, Jibannagar
+Jashore: Abhaynagar, Bagherpara, Chaugachha, Jashore Sadar, Jhikargachha, Keshabpur, Manirampur, Sharsha
+Jhenaidah: Harinakunda, Jhenaidah Sadar, Kaliganj, Kotchandpur, Maheshpur, Shailkupa
+Khulna: Aranghata, Batiaghata, Dacope, Daulatpur, Dighalia, Dumuria, Harintana, Khalishpur, Khan Jahan Ali, Khulna Sadar, Koyra, Labanchara, Paikgachha, Phultala, Rupsha, Sonadanga, Terokhada
+Kushtia: Bheramara, Daulatpur, Khoksa, Kumarkhali, Kushtia Sadar, Mirpur
+Magura: Magura Sadar, Mohammadpur, Shalikha, Sreepur
+Meherpur: Gangni, Meherpur Sadar, Mujibnagar
+Narail: Kalia, Lohagara, Naragati, Narail Sadar
+Satkhira: Assasuni, Debhata, Kalaroa, Kaliganj, Satkhira Sadar, Shyamnagar, Tala
+
+# ---- Mymensingh division ----
+Jamalpur: Bakshiganj, Dewanganj, Islampur, Jamalpur Sadar, Madarganj, Melandaha, Sarishabari
+Mymensingh: Bhaluka, Dhobaura, Fulbaria, Gaffargaon, Gauripur, Haluaghat, Ishwarganj, Muktagachha, Mymensingh Sadar, Nandail, Phulpur, Tarakanda, Trishal
+Netrokona: Atpara, Barhatta, Durgapur, Kalmakanda, Kendua, Khaliajuri, Madan, Mohanganj, Netrokona Sadar, Purbadhala
+Sherpur: Jhenaigati, Nakla, Nalitabari, Sherpur Sadar, Sreebardi
+
+# ---- Rajshahi division ----
+Bogura: Adamdighi, Bogura Sadar, Dhunat, Dhupchanchia, Gabtali, Kahaloo, Nandigram, Sariakandi, Shajahanpur, Sherpur, Shibganj, Sonatola
+Chapainawabganj: Bholahat, Chapainawabganj Sadar, Gomastapur, Nachole, Shibganj
+Joypurhat: Akkelpur, Joypurhat Sadar, Kalai, Khetlal, Panchbibi
+Naogaon: Atrai, Badalgachhi, Dhamoirhat, Mahadebpur, Manda, Naogaon Sadar, Niamatpur, Patnitala, Porsha, Raninagar, Sapahar
+Natore: Bagatipara, Baraigram, Gurudaspur, Lalpur, Naldanga, Natore Sadar, Singra
+Pabna: Atgharia, Bera, Bhangura, Chatmohar, Faridpur, Ishwardi, Pabna Sadar, Santhia, Sujanagar
+Rajshahi: Bagha, Bagmara, Boalia, Charghat, Durgapur, Godagari, Mohanpur, Motihar, Paba, Puthia, Rajpara, Shah Makhdum, Tanore
+Sirajganj: Belkuchi, Chauhali, Kamarkhanda, Kazipur, Raiganj, Shahjadpur, Sirajganj Sadar, Tarash, Ullahpara
+
+# ---- Rangpur division ----
+Dinajpur: Birampur, Birganj, Biral, Bochaganj, Chirirbandar, Dinajpur Sadar, Ghoraghat, Hakimpur, Kaharole, Khansama, Nawabganj, Parbatipur, Phulbari
+Gaibandha: Fulchhari, Gaibandha Sadar, Gobindaganj, Palashbari, Sadullapur, Saghata, Sundarganj
+Kurigram: Bhurungamari, Char Rajibpur, Chilmari, Kurigram Sadar, Nageshwari, Phulbari, Rajarhat, Raomari, Ulipur
+Lalmonirhat: Aditmari, Hatibandha, Kaliganj, Lalmonirhat Sadar, Patgram
+Nilphamari: Dimla, Domar, Jaldhaka, Kishoreganj, Nilphamari Sadar, Saidpur
+Panchagarh: Atwari, Boda, Debiganj, Panchagarh Sadar, Tetulia
+Rangpur: Badarganj, Gangachara, Haragach, Kaunia, Kotwali, Mithapukur, Pirgachha, Pirganj, Rangpur Sadar, Taraganj, Tajhat
+Thakurgaon: Baliadangi, Haripur, Pirganj, Ranisankail, Thakurgaon Sadar
+
+# ---- Sylhet division ----
+Habiganj: Ajmiriganj, Bahubal, Baniachong, Chunarughat, Habiganj Sadar, Lakhai, Madhabpur, Nabiganj, Shayestaganj
+Moulvibazar: Barlekha, Juri, Kamalganj, Kulaura, Moulvibazar Sadar, Rajnagar, Sreemangal
+Sunamganj: Bishwamvarpur, Chhatak, Dakshin Sunamganj, Derai, Dharamapasha, Dowarabazar, Jagannathpur, Jamalganj, Sullah, Sunamganj Sadar, Tahirpur
+Sylhet: Airport, Balaganj, Beanibazar, Bishwanath, Companiganj, Dakshin Surma, Fenchuganj, Golapganj, Gowainghat, Jaintiapur, Jalalabad, Kanaighat, Kotwali, Moglabazar, Osmaninagar, Shah Poran, Sylhet Sadar, Zakiganj

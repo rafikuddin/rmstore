@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The whole app sits on this soft indigo -> lavender glow (white title text on top, light cards below) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:type="linear" android:angle="270"
+        android:startColor="@color/app_top" android:centerColor="@color/app_mid" android:endColor="@color/app_end" android:centerY="0.26" />
+</shape>

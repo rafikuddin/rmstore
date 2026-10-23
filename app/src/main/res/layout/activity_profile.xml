@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+<include layout="@layout/header_bar" />
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+    android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingTop="4dp" android:paddingBottom="24dp">
+
+        <!-- Photo -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:gravity="center_horizontal" android:padding="18dp">
+                <com.google.android.material.card.MaterialCardView
+                    app:cardCornerRadius="55dp" app:cardElevation="0dp" app:cardBackgroundColor="@color/chip"
+                    android:layout_width="110dp" android:layout_height="110dp">
+                    <TextView android:id="@+id/tvPhotoInitial" android:gravity="center" android:textSize="44sp"
+                        android:textStyle="bold" android:textColor="@color/primary"
+                        android:layout_width="match_parent" android:layout_height="match_parent" />
+                    <ImageView android:id="@+id/imgProfile" android:scaleType="centerCrop"
+                        android:contentDescription="Profile photo"
+                        android:layout_width="match_parent" android:layout_height="match_parent" />
+                </com.google.android.material.card.MaterialCardView>
+                <TextView android:id="@+id/tvProfileName" android:textSize="18sp" android:textStyle="bold"
+                    android:textColor="@color/ink" android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvProfileUser" android:textSize="13sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="12dp">
+                    <LinearLayout android:id="@+id/btnTakePhoto"
+                        android:orientation="vertical" android:gravity="center"
+                        android:background="@drawable/bg_action_tile" android:clickable="true" android:focusable="true"
+                        android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp" android:layout_marginStart="0dp">
+                        <TextView android:text="📷" android:textSize="22sp" android:gravity="center"
+                            android:background="@drawable/bg_action_icon"
+                            android:layout_width="46dp" android:layout_height="46dp" />
+                        <TextView android:text="Take photo" android:textSize="14sp" android:textStyle="bold"
+                            android:textColor="@color/primary" android:gravity="center" android:maxLines="1" android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:text="Use the camera" android:textSize="11sp" android:textColor="@color/muted"
+                            android:gravity="center" android:maxLines="1"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/btnPickPhoto"
+                        android:orientation="vertical" android:gravity="center"
+                        android:background="@drawable/bg_action_tile" android:clickable="true" android:focusable="true"
+                        android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:layout_marginEnd="0dp" android:layout_marginStart="5dp">
+                        <TextView android:text="🖼" android:textSize="22sp" android:gravity="center"
+                            android:background="@drawable/bg_action_icon"
+                            android:layout_width="46dp" android:layout_height="46dp" />
+                        <TextView android:text="Choose picture" android:textSize="14sp" android:textStyle="bold"
+                            android:textColor="@color/primary" android:gravity="center" android:maxLines="1" android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:text="From gallery" android:textSize="11sp" android:textColor="@color/muted"
+                            android:gravity="center" android:maxLines="1"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+                <TextView android:id="@+id/tvPhotoMsg" android:gravity="center" android:textSize="13sp" android:layout_marginTop="6dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Details -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+                <TextView android:text="CONTACT" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Official phone number" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etOfficial"
+                        android:inputType="phone" android:maxLength="20"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Personal phone number" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPersonal"
+                        android:inputType="phone" android:maxLength="20"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Email address" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etEmail"
+                        android:inputType="textEmailAddress" android:maxLength="100"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView android:text="EMERGENCY CONTACT" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06" android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Emergency phone number" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etEmergency"
+                        android:inputType="phone" android:maxLength="20"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:hint="Relation with emergency contact" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/ddRelation"
+                        android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilOther"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Write the relation (for example Sister)" android:layout_marginTop="12dp"
+                    android:visibility="gone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etOther"
+                        android:inputType="textCapWords" android:maxLength="30"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView android:text="WORK &amp; SIZE" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06" android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Base Name (tap to choose)" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etBaseName"
+                        android:inputType="none" android:focusable="false" android:cursorVisible="false" android:clickable="true"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Base Code (fills in by itself)" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etBaseCode"
+                        android:inputType="none" android:focusable="false" android:cursorVisible="false" android:clickable="false"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:hint="T-shirt size" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/ddTshirt"
+                        android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView android:text="VEHICLE &amp; EQUIPMENT" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06" android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Bike number" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etBike"
+                        android:inputType="textCapCharacters" android:maxLength="30"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilLaptop"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Laptop model (managers)" android:layout_marginTop="12dp"
+                    android:visibility="gone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etLaptop"
+                        android:inputType="text" android:maxLength="60"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnSaveProfile" android:text="Save profile"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" />
+                <TextView android:id="@+id/tvProfileMsg" android:gravity="center" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>
+<include layout="@layout/bottom_nav" />
+</LinearLayout>

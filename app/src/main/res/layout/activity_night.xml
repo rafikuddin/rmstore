@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+<!-- Fixed top: stays in place while the page below scrolls -->
+<include layout="@layout/header_bar" />
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingTop="4dp" android:paddingBottom="24dp">
+
+        <!-- Summary of this cycle (26th to 25th): how many night holds and where -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardSummary" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginBottom="12dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+                <!-- previous / next cycle -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:id="@+id/btnCyclePrev" android:text="‹" android:textSize="28sp" android:textStyle="bold"
+                        android:textColor="@color/primary" android:gravity="center" android:clickable="true" android:focusable="true"
+                        android:layout_width="44dp" android:layout_height="44dp" />
+                    <TextView android:id="@+id/tvSumHeading" android:text="NIGHT HOLD" android:textSize="12sp" android:textStyle="bold"
+                        android:textColor="@color/primary" android:letterSpacing="0.06" android:gravity="center"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/btnCycleNext" android:text="›" android:textSize="28sp" android:textStyle="bold"
+                        android:textColor="@color/primary" android:gravity="center" android:clickable="true" android:focusable="true"
+                        android:layout_width="44dp" android:layout_height="44dp" />
+                </LinearLayout>
+                <TextView android:id="@+id/tvSumCount" android:text="" android:textSize="26sp" android:textStyle="bold"
+                    android:textColor="@color/ink" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvSumHint" android:text="" android:textSize="13sp" android:textColor="@color/muted"
+                    android:layout_marginTop="4dp" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Shown instead of the form once today's night hold has been submitted -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDone" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="0dp"
+            app:cardBackgroundColor="@color/ok_bg" app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <TextView android:id="@+id/tvDone" android:textSize="15sp" android:textColor="@color/ok_text"
+                android:lineSpacingExtra="4dp" android:padding="20dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Shown outside the 9 PM - 6 AM window (when tonight's night hold has not been submitted) -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardClosed" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="0dp"
+            app:cardBackgroundColor="@color/warn_bg" app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:gravity="center_horizontal" android:padding="22dp">
+                <TextView android:text="🌙" android:textSize="44sp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:text="Night hold is closed right now" android:textSize="18sp" android:textStyle="bold"
+                    android:textColor="@color/warn_t1" android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvClosed" android:textSize="14sp" android:textColor="@color/warn_t2" android:gravity="center"
+                    android:lineSpacingExtra="4dp" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardForm"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="0dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+
+                <TextView android:text="🌙  Night hold" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvNightHours" android:text="Open every night. Every field and your live location are required."
+                    android:textSize="13sp" android:textColor="@color/muted" android:layout_marginTop="2dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                <!-- Live location -->
+                <TextView android:id="@+id/tvLoc" android:text="📍 Getting your location…" android:textSize="14sp"
+                    android:textColor="@color/ink" android:lineSpacingExtra="3dp"
+                    android:background="@drawable/bg_chip" android:padding="14dp" android:layout_marginTop="14dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnRetryLoc" android:visibility="gone"
+                    style="@style/BtnOutline" android:text="Retry location" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="District (tap to choose)" android:layout_marginTop="14dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etDistrict"
+                        android:focusable="false" android:cursorVisible="false" android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Thana (tap to choose)" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etThana"
+                        android:focusable="false" android:cursorVisible="false" android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Hotel name" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHotel"
+                        android:inputType="textCapWords" android:maxLength="100" android:singleLine="true"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnNightSubmit"
+                    android:text="Submit Night Hold" android:enabled="false"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" />
+                <TextView android:id="@+id/tvNightMsg" android:gravity="center" android:textSize="14sp" android:layout_marginTop="10dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- The details of this cycle's night holds (date, hotel, location), below the form -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/cardDetails" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+                <TextView android:id="@+id/tvDetHeading" android:text="NIGHT HOLDS IN THIS CYCLE" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:id="@+id/sumList" android:orientation="vertical"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>
+<include layout="@layout/bottom_nav" />
+</LinearLayout>

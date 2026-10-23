@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+<!-- Fixed top: stays in place while the page below scrolls -->
+<include layout="@layout/header_bar" />
+<ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingTop="4dp" android:paddingBottom="24dp">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="0dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="14dp">
+                <TextView android:id="@+id/tvBalTitle" android:text="Leave Balance" android:textSize="16sp" android:textStyle="bold"
+                    android:textColor="@color/ink" android:layout_marginStart="6dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:id="@+id/balBox" android:orientation="vertical" android:layout_marginTop="6dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvBalTotal" android:textSize="13sp" android:textColor="@color/muted" android:gravity="center"
+                    android:background="@drawable/bg_chip" android:padding="8dp" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp"
+            app:cardCornerRadius="24dp" app:cardElevation="6dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="18dp">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:hint="Leave type" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/ddType"
+                        android:inputType="none" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="From date" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etFrom"
+                        android:focusable="false" android:cursorVisible="false" android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="To date" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etTo"
+                        android:focusable="false" android:cursorVisible="false" android:inputType="none"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView android:id="@+id/tvDays" android:text="Total: 0 day(s)" android:textStyle="bold"
+                    android:textColor="@color/primary" android:textSize="16sp" android:gravity="center"
+                    android:background="@drawable/bg_chip" android:padding="12dp" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:hint="Reason (required)" android:layout_marginTop="12dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/etReason"
+                        android:inputType="textMultiLine" android:minLines="2"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <TextView android:text="LEAVE APPLICATION (PICTURE, REQUIRED)" android:textSize="12sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.06" android:layout_marginTop="16dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:text="Both are required: write the reason above and attach a picture of your signed leave application."
+                    android:textSize="12sp" android:textColor="@color/muted" android:layout_marginTop="2dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="8dp">
+                    <LinearLayout android:id="@+id/btnTakeApp"
+                        android:orientation="vertical" android:gravity="center"
+                        android:background="@drawable/bg_action_tile" android:clickable="true" android:focusable="true"
+                        android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp" android:layout_marginStart="0dp">
+                        <TextView android:text="📷" android:textSize="22sp" android:gravity="center"
+                            android:background="@drawable/bg_action_icon"
+                            android:layout_width="46dp" android:layout_height="46dp" />
+                        <TextView android:text="Take photo" android:textSize="14sp" android:textStyle="bold"
+                            android:textColor="@color/primary" android:gravity="center" android:maxLines="1" android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:text="Use the camera" android:textSize="11sp" android:textColor="@color/muted"
+                            android:gravity="center" android:maxLines="1"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/btnPickApp"
+                        android:orientation="vertical" android:gravity="center"
+                        android:background="@drawable/bg_action_tile" android:clickable="true" android:focusable="true"
+                        android:paddingTop="12dp" android:paddingBottom="12dp" android:paddingStart="8dp" android:paddingEnd="8dp"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:layout_marginEnd="0dp" android:layout_marginStart="5dp">
+                        <TextView android:text="🖼" android:textSize="22sp" android:gravity="center"
+                            android:background="@drawable/bg_action_icon"
+                            android:layout_width="46dp" android:layout_height="46dp" />
+                        <TextView android:text="Choose picture" android:textSize="14sp" android:textStyle="bold"
+                            android:textColor="@color/primary" android:gravity="center" android:maxLines="1" android:layout_marginTop="6dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:text="From gallery" android:textSize="11sp" android:textColor="@color/muted"
+                            android:gravity="center" android:maxLines="1"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout android:id="@+id/appPreviewBox" android:visibility="gone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="8dp">
+                    <com.google.android.material.card.MaterialCardView
+                        app:cardCornerRadius="12dp" app:cardElevation="0dp" app:cardBackgroundColor="@color/chip"
+                        android:layout_width="72dp" android:layout_height="72dp">
+                        <ImageView android:id="@+id/imgApp" android:scaleType="centerCrop"
+                            android:contentDescription="Leave application picture"
+                            android:layout_width="match_parent" android:layout_height="match_parent" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <TextView android:id="@+id/tvAppInfo" android:textSize="13sp" android:textColor="@color/ink"
+                        android:layout_marginStart="12dp"
+                        android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/btnRemoveApp" android:text="✕ Remove" android:textSize="13sp" android:textStyle="bold"
+                        android:textColor="@color/danger2" android:padding="8dp" android:clickable="true" android:focusable="true"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnApply" android:text="Apply for Leave"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" />
+                <TextView android:id="@+id/tvMsg" android:gravity="center" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView android:text="My Leave Requests" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
+            android:layout_marginStart="20dp" android:layout_marginTop="22dp" android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <LinearLayout android:id="@+id/listLeaves" android:orientation="vertical"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+            android:layout_width="match_parent" android:layout_height="wrap_content" />
+    </LinearLayout>
+</ScrollView>
+<include layout="@layout/bottom_nav" />
+</LinearLayout>
