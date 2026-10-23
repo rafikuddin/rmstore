@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@drawable/bg_app">
+
+    <!-- Fixed top: stays in place while the page below scrolls -->
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@drawable/bg_header" android:orientation="vertical"
+        android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingTop="10dp" android:paddingBottom="34dp">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardAvatar"
+                app:cardCornerRadius="24dp" app:cardElevation="0dp" app:cardBackgroundColor="#33FFFFFF"
+                android:clickable="true" android:focusable="true"
+                android:layout_width="48dp" android:layout_height="48dp">
+                <TextView android:id="@+id/tvAvatar" android:gravity="center" android:textColor="@color/on_dark"
+                    android:textSize="20sp" android:textStyle="bold"
+                    android:layout_width="match_parent" android:layout_height="match_parent" />
+                <ImageView android:id="@+id/imgAvatar" android:scaleType="centerCrop" android:visibility="gone"
+                    android:contentDescription="Profile photo"
+                    android:layout_width="match_parent" android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
+            <TextView android:text="RM Store" android:textColor="@color/on_dark" android:textStyle="bold" android:textSize="26sp"
+                android:letterSpacing="0.03" android:layout_marginStart="12dp"
+                android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+            <FrameLayout android:layout_width="42dp" android:layout_height="42dp" android:layout_marginEnd="8dp">
+                <TextView android:id="@+id/btnBell" android:text="" android:textSize="18sp"
+                    android:textColor="@color/on_dark" android:background="@drawable/bg_icon_btn"
+                    android:gravity="center" android:clickable="true" android:focusable="true"
+                    android:contentDescription="Notifications"
+                    android:layout_width="42dp" android:layout_height="42dp" />
+                <ImageView android:id="@+id/bellIcon" android:src="@drawable/ic_bell"
+                    android:importantForAccessibility="no" android:clickable="false" android:focusable="false"
+                    android:layout_gravity="center" android:layout_width="22dp" android:layout_height="22dp" />
+                <TextView android:id="@+id/tvBellBadge" android:visibility="gone" android:text="1"
+                    android:textColor="@color/on_dark" android:textSize="10sp" android:textStyle="bold" android:gravity="center"
+                    android:background="@drawable/bg_badge"
+                    android:layout_gravity="top|end"
+                    android:minWidth="18dp" android:layout_width="wrap_content" android:layout_height="18dp"
+                    android:paddingStart="4dp" android:paddingEnd="4dp" />
+            </FrameLayout>
+            <TextView android:id="@+id/btnRefresh" android:visibility="gone" android:text="⟳" android:textSize="22sp"
+                android:textColor="@color/on_dark" android:background="@drawable/bg_icon_btn"
+                android:gravity="center" android:clickable="true" android:focusable="true"
+                android:layout_width="42dp" android:layout_height="42dp" />
+            <TextView android:id="@+id/btnMenu" android:text="👤" android:textSize="18sp"
+                android:textColor="@color/on_dark" android:background="@drawable/bg_icon_btn"
+                android:gravity="center" android:layout_marginStart="8dp"
+                android:clickable="true" android:focusable="true"
+                android:layout_width="42dp" android:layout_height="42dp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="bottom" android:layout_marginTop="10dp">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView android:text="Welcome back" android:textColor="@color/on_dark_soft" android:textSize="13sp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvName" android:textColor="@color/on_dark" android:textSize="22sp" android:textStyle="bold"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvDate" android:textColor="@color/on_dark_soft" android:textSize="13sp" android:layout_marginTop="1dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout android:background="@drawable/bg_pill_translucent" android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp" android:paddingEnd="14dp" android:paddingTop="8dp" android:paddingBottom="8dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextClock android:format12Hour="hh:mm a" android:format24Hour="hh:mm a"
+                    android:textColor="@color/on_dark" android:textSize="20sp" android:textStyle="bold"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <View android:background="@drawable/bg_sheet_top"
+        android:layout_width="match_parent" android:layout_height="30dp" android:layout_marginTop="-30dp" />
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:fillViewport="true" android:scrollbars="none">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:paddingBottom="20dp">
+
+            <!-- Today's status -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="2dp"
+                app:cardCornerRadius="24dp" app:cardElevation="6dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:padding="18dp">
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardTodayMini"
+                        app:cardCornerRadius="28dp" app:cardElevation="0dp" app:cardBackgroundColor="@color/accent_soft"
+                        android:layout_width="56dp" android:layout_height="56dp">
+                        <TextView android:id="@+id/tvTodayPin" android:text="📍" android:textSize="24sp" android:gravity="center"
+                            android:layout_width="match_parent" android:layout_height="match_parent" />
+                        <ImageView android:id="@+id/imgTodayMini" android:visibility="gone" android:scaleType="centerCrop"
+                            android:contentDescription="Today's attendance selfie"
+                            android:layout_width="match_parent" android:layout_height="match_parent" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:layout_marginStart="14dp">
+                        <TextView android:text="TODAY'S STATUS" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/muted"
+                            android:letterSpacing="0.08"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:id="@+id/tvStatus" android:text="Checking..." android:textSize="19sp" android:textStyle="bold"
+                            android:textColor="@color/ink" android:layout_marginTop="2dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:id="@+id/tvMonth" android:textColor="@color/muted" android:textSize="13sp" android:layout_marginTop="3dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Today's selfie and location (only after attendance is marked) -->
+                <LinearLayout android:id="@+id/todayDetail" android:visibility="gone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingBottom="18dp">
+                    <TextView android:id="@+id/tvTodayLoc" android:textSize="13sp" android:textColor="@color/muted"
+                        android:layout_marginTop="0dp"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Big white pill buttons (like Send / Request in the concept) -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp">
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnQuickAttendance"
+                    style="@style/BtnWhite" android:text="📸  Attendance"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnQuickLeave"
+                    style="@style/BtnWhite" android:text="🌴  Leave"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp" />
+            </LinearLayout>
+
+            <!-- New app version available (hidden when this phone is up to date) -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardUpdate"
+                android:visibility="gone" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp"
+                app:cardCornerRadius="20dp" app:cardElevation="3dp" app:cardBackgroundColor="@color/upd_bg">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:padding="14dp">
+                    <TextView android:text="⬆️" android:textSize="22sp" android:gravity="center"
+                        android:layout_width="40dp" android:layout_height="40dp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:layout_marginStart="8dp">
+                        <TextView android:id="@+id/tvUpdateTitle" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/upd_t1"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:id="@+id/tvUpdateText" android:textSize="13sp" android:textColor="@color/upd_t2"
+                            android:maxLines="3" android:ellipsize="end"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <TextView android:text="Update" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/on_dark"
+                        android:background="@drawable/bg_update_btn" android:gravity="center"
+                        android:paddingStart="14dp" android:paddingEnd="14dp" android:paddingTop="8dp" android:paddingBottom="8dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Notice from an admin (hidden when there is none) -->
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardNotice"
+                android:visibility="gone" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp"
+                app:cardCornerRadius="20dp" app:cardElevation="3dp" app:cardBackgroundColor="@color/note_bg">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:padding="14dp">
+                    <TextView android:text="📢" android:textSize="22sp" android:gravity="center"
+                        android:layout_width="40dp" android:layout_height="40dp" />
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:layout_marginStart="8dp">
+                        <TextView android:id="@+id/tvNoticeTitle" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="@color/note_t1" android:maxLines="1" android:ellipsize="end"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:id="@+id/tvNoticeText" android:textSize="13sp" android:textColor="@color/note_t2"
+                            android:maxLines="3" android:ellipsize="end"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        <TextView android:id="@+id/tvNoticeMore" android:textSize="12sp" android:textStyle="bold"
+                            android:textColor="@color/note_t3" android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quick actions: pastel gradient tiles with a white round icon -->
+            <TextView android:text="Quick Actions" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
+                android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp"
+                android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="10dp">
+                <LinearLayout android:id="@+id/tileNight" android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_tile_lilac" android:clickable="true" android:focusable="true"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="124dp"
+                    android:layout_marginStart="0dp" android:layout_marginEnd="6dp" android:elevation="3dp">
+                    <TextView android:text="🌙" android:textSize="26sp" android:gravity="center"
+                        android:background="@drawable/bg_action_icon"
+                        android:layout_width="58dp" android:layout_height="58dp" />
+                    <TextView android:text="Night Hold" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/tileCalendar" android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_tile_peach" android:clickable="true" android:focusable="true"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="124dp"
+                    android:layout_marginStart="6dp" android:layout_marginEnd="6dp" android:elevation="3dp">
+                    <TextView android:text="📅" android:textSize="26sp" android:gravity="center"
+                        android:background="@drawable/bg_action_icon"
+                        android:layout_width="58dp" android:layout_height="58dp" />
+                    <TextView android:text="Calendar" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/tileReports" android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_tile_mint" android:clickable="true" android:focusable="true"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="124dp"
+                    android:layout_marginStart="6dp" android:layout_marginEnd="0dp" android:elevation="3dp">
+                    <TextView android:text="📊" android:textSize="26sp" android:gravity="center"
+                        android:background="@drawable/bg_action_icon"
+                        android:layout_width="58dp" android:layout_height="58dp" />
+                    <TextView android:text="Reports" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/tileTarget" android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/bg_tile_lilac" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="76dp"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+                android:paddingStart="14dp" android:paddingEnd="14dp" android:elevation="3dp">
+                <TextView android:text="🎯" android:textSize="26sp" android:gravity="center"
+                    android:background="@drawable/bg_action_icon"
+                    android:layout_width="58dp" android:layout_height="58dp" />
+                <LinearLayout android:orientation="vertical" android:layout_marginStart="14dp"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content">
+                    <TextView android:text="Target vs Collection" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:text="How much you have collected against your target" android:textSize="12sp" android:textColor="@color/muted"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <TextView android:text="›" android:textSize="26sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/tileSurvey" android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/bg_tile_mint" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="76dp"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+                android:paddingStart="14dp" android:paddingEnd="14dp" android:elevation="3dp">
+                <TextView android:text="📋" android:textSize="26sp" android:gravity="center"
+                    android:background="@drawable/bg_action_icon"
+                    android:layout_width="58dp" android:layout_height="58dp" />
+                <LinearLayout android:orientation="vertical" android:layout_marginStart="14dp"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content">
+                    <TextView android:text="Surveys" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvSurveySub" android:text="Answer the questions your team has sent" android:textSize="12sp" android:textColor="@color/muted"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <TextView android:text="›" android:textSize="26sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Leave balance -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp">
+                <TextView android:id="@+id/tvBalHeading" android:text="LEAVE BALANCE" android:textSize="13sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.08"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvBalUsed" android:text="Used 0" android:textSize="13sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="8dp"
+                app:cardCornerRadius="24dp" app:cardElevation="3dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="14dp">
+                <FrameLayout android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="0dp">
+                    <ProgressBar android:id="@+id/pbCasual" style="?android:attr/progressBarStyleHorizontal"
+                        android:indeterminate="false" android:max="100" android:progress="0"
+                        android:progressDrawable="@drawable/bar_casual"
+                        android:layout_width="match_parent" android:layout_height="40dp" />
+                    <TextView android:id="@+id/tvCasual" android:text="Casual" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|start" android:layout_marginStart="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvCasualVal" android:text="-" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|end" android:layout_marginEnd="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </FrameLayout>
+                <FrameLayout android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="10dp">
+                    <ProgressBar android:id="@+id/pbSick" style="?android:attr/progressBarStyleHorizontal"
+                        android:indeterminate="false" android:max="100" android:progress="0"
+                        android:progressDrawable="@drawable/bar_sick"
+                        android:layout_width="match_parent" android:layout_height="40dp" />
+                    <TextView android:id="@+id/tvSick" android:text="Sick" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|start" android:layout_marginStart="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvSickVal" android:text="-" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|end" android:layout_marginEnd="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </FrameLayout>
+                <FrameLayout android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="10dp">
+                    <ProgressBar android:id="@+id/pbEarn" style="?android:attr/progressBarStyleHorizontal"
+                        android:indeterminate="false" android:max="100" android:progress="0"
+                        android:progressDrawable="@drawable/bar_earn"
+                        android:layout_width="match_parent" android:layout_height="40dp" />
+                    <TextView android:id="@+id/tvEarn" android:text="Earn" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|start" android:layout_marginStart="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvEarnVal" android:text="-" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|end" android:layout_marginEnd="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </FrameLayout>
+                <FrameLayout android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="10dp">
+                    <ProgressBar android:id="@+id/pbPaternity" style="?android:attr/progressBarStyleHorizontal"
+                        android:indeterminate="false" android:max="100" android:progress="0"
+                        android:progressDrawable="@drawable/bar_paternity"
+                        android:layout_width="match_parent" android:layout_height="40dp" />
+                    <TextView android:id="@+id/tvPaternity" android:text="Paternity" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|start" android:layout_marginStart="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvPaternityVal" android:text="-" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_gravity="center_vertical|end" android:layout_marginEnd="16dp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Night hold this month -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp">
+                <TextView android:id="@+id/tvNightHeading" android:text="NIGHT HOLD · THIS MONTH" android:textSize="13sp" android:textStyle="bold"
+                    android:textColor="@color/primary" android:letterSpacing="0.08"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvNightCount" android:text="0 nights" android:textSize="13sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardNight"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="8dp"
+                android:clickable="true" android:focusable="true"
+                app:cardCornerRadius="24dp" app:cardElevation="3dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:text="🌙" android:textSize="22sp" android:gravity="center"
+                            android:background="@drawable/bg_chip"
+                            android:layout_width="46dp" android:layout_height="46dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                            android:orientation="vertical" android:layout_marginStart="12dp">
+                            <TextView android:text="TODAY" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/muted"
+                                android:letterSpacing="0.08"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                            <TextView android:id="@+id/tvNightToday" android:text="Checking..." android:textSize="16sp" android:textStyle="bold"
+                                android:textColor="@color/ink"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                        </LinearLayout>
+                        <TextView android:text="›" android:textColor="@color/muted" android:textSize="26sp" android:textStyle="bold"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/nightList" android:orientation="vertical"
+                        android:layout_marginTop="6dp"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/bottom_nav" />
+</LinearLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_header" android:gravity="center"
+            android:orientation="vertical" android:paddingTop="48dp" android:paddingBottom="96dp">
+            <com.google.android.material.card.MaterialCardView
+                app:cardCornerRadius="20dp" app:cardElevation="4dp"
+                android:layout_width="88dp" android:layout_height="88dp">
+                <ImageView android:src="@drawable/logo" android:scaleType="centerCrop" android:contentDescription="RM Store"
+                    android:layout_width="match_parent" android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
+            <TextView android:text="Update required" android:textSize="26sp" android:textStyle="bold"
+                android:textColor="@color/on_dark" android:layout_marginTop="16dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <TextView android:text="Install the new version to keep using the app" android:textSize="14sp"
+                android:textColor="@color/on_dark_soft" android:layout_marginTop="4dp" android:gravity="center"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="-64dp"
+            app:cardCornerRadius="24dp" app:cardElevation="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="22dp" android:gravity="center_horizontal">
+                <TextView android:text="⬆️" android:textSize="40sp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvFuVersion" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
+                    android:layout_marginTop="6dp" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvFuInstalled" android:textSize="13sp" android:textColor="@color/muted"
+                    android:layout_marginTop="4dp" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvFuNotes" android:textSize="14sp" android:textColor="@color/ink"
+                    android:layout_marginTop="12dp" android:gravity="center" android:lineSpacingExtra="3dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:text="This update is compulsory. You can use the app again right after it is installed. Your data is not affected."
+                    android:textSize="13sp" android:textColor="@color/muted" android:layout_marginTop="12dp" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnFuInstall" android:text="Download and install"
+                    android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="18dp" />
+                <TextView android:id="@+id/tvFuMsg" android:textColor="@color/muted" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
+                <TextView android:id="@+id/tvFuCheck" android:text="Check again" android:textColor="@color/accent"
+                    android:textStyle="bold" android:textSize="14sp" android:gravity="center" android:padding="10dp"
+                    android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <View android:layout_width="match_parent" android:layout_height="24dp" />
+    </LinearLayout>
+</ScrollView>

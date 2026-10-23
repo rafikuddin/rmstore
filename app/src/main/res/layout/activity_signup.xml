@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true"
+    android:clipToPadding="false">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+        <!-- Header: same look as the login page, shorter -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/bg_header" android:gravity="center_horizontal"
+            android:orientation="vertical" android:paddingTop="30dp" android:paddingBottom="84dp">
+            <com.google.android.material.card.MaterialCardView
+                app:cardCornerRadius="16dp" app:cardElevation="4dp"
+                android:layout_width="64dp" android:layout_height="64dp">
+                <ImageView android:src="@drawable/logo" android:scaleType="centerCrop"
+                    android:contentDescription="RM Store"
+                    android:layout_width="match_parent" android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
+            <TextView android:id="@+id/suTitle" android:text="Create your account" android:textSize="24sp" android:textStyle="bold"
+                android:textColor="@color/on_dark" android:layout_marginTop="12dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <TextView android:id="@+id/suSub" android:text="Your details" android:textSize="14sp"
+                android:textColor="@color/on_dark_soft" android:layout_marginTop="4dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <!-- Steps: 1 Details · 2 Verify · 3 Done -->
+            <LinearLayout android:id="@+id/suSteps" android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginTop="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <TextView android:id="@+id/suStep1" android:text="1  Details" android:textSize="12sp" android:textStyle="bold"
+                    android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="5dp" android:paddingBottom="5dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <View android:background="#66FFFFFF" android:layout_width="18dp" android:layout_height="2dp" android:layout_marginStart="6dp" android:layout_marginEnd="6dp" />
+                <TextView android:id="@+id/suStep2" android:text="2  Verify e-mail" android:textSize="12sp" android:textStyle="bold"
+                    android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="5dp" android:paddingBottom="5dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <View android:background="#66FFFFFF" android:layout_width="18dp" android:layout_height="2dp" android:layout_marginStart="6dp" android:layout_marginEnd="6dp" />
+                <TextView android:id="@+id/suStep3" android:text="3  Done" android:textSize="12sp" android:textStyle="bold"
+                    android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="5dp" android:paddingBottom="5dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <View android:background="@drawable/bg_sheet_top"
+            android:layout_width="match_parent" android:layout_height="30dp" android:layout_marginTop="-30dp" />
+
+        <!-- STEP 1: details -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/suCard1"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="-52dp"
+            app:cardCornerRadius="24dp" app:cardElevation="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="20dp">
+                <TextView android:text="ABOUT YOU" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/muted"
+                    android:letterSpacing="0.08" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Sam.Field"
+                    android:hint="Full name" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/suName"
+                        android:inputType="textPersonName|textCapWords" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Sam.Field"
+                    android:hint="Employee ID" app:helperText="Your company Employee ID (letters, numbers, . _ -)"
+                    android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/suId"
+                        android:inputType="textNoSuggestions" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Sam.Field"
+                    android:hint="E-mail address" app:helperText="We send a 6-digit code here"
+                    android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/suMail"
+                        android:inputType="textEmailAddress" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView android:text="CHOOSE A PASSWORD" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/muted"
+                    android:letterSpacing="0.08" android:layout_marginTop="18dp"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Sam.Field"
+                    android:hint="Password" app:endIconMode="password_toggle" app:helperText="At least 8 characters, not easy to guess"
+                    android:layout_marginTop="8dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/suPass"
+                        android:inputType="textPassword" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Sam.Field"
+                    android:hint="Confirm password" app:endIconMode="password_toggle"
+                    android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/suPass2"
+                        android:inputType="textPassword" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnSuSend" android:text="Send verification code"
+                    android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="18dp" />
+                <TextView android:id="@+id/tvSuError" android:textColor="@color/danger" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" />
+                <TextView android:id="@+id/tvSuLogin" android:text="Already have an account? Sign in" android:textColor="@color/accent"
+                    android:textStyle="bold" android:textSize="14sp" android:gravity="center" android:padding="10dp"
+                    android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- STEP 2: the code -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/suCard2" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="-52dp"
+            app:cardCornerRadius="24dp" app:cardElevation="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="20dp" android:gravity="center_horizontal">
+                <com.example.attendance.OtpView android:id="@+id/suOtp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <!-- the real input: invisible, it only collects the digits and shows the keyboard; OtpView draws them -->
+                <EditText android:id="@+id/suCode" android:importantForAccessibility="no" android:background="@null"
+                    android:inputType="number" android:maxLength="6" android:cursorVisible="false" android:alpha="0"
+                    android:textColor="#00000000" android:layout_width="1dp" android:layout_height="1dp" />
+                <TextView android:id="@+id/tvSuError2" android:textColor="@color/danger" android:gravity="center"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" />
+                <TextView android:id="@+id/tvSuResend" android:text="Send a new code" android:textColor="@color/accent"
+                    android:textStyle="bold" android:textSize="14sp" android:gravity="center" android:padding="10dp"
+                    android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvSuBack" android:text="‹  Change my details" android:textColor="@color/muted"
+                    android:textSize="14sp" android:gravity="center" android:padding="10dp"
+                    android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- STEP 3: done -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/suCard3" android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="-52dp"
+            app:cardCornerRadius="24dp" app:cardElevation="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="24dp" android:gravity="center_horizontal">
+                <TextView android:text="✅" android:textSize="44sp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:text="Request sent" android:textSize="20sp" android:textStyle="bold" android:textColor="@color/ink"
+                    android:layout_marginTop="6dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvSuDone" android:textSize="14sp" android:textColor="@color/muted" android:gravity="center"
+                    android:lineSpacingExtra="3dp" android:layout_marginTop="8dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnSuBack" android:text="Back to sign in"
+                    android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="20dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <View android:layout_width="match_parent" android:layout_height="24dp" />
+    </LinearLayout>
+</ScrollView>
