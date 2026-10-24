@@ -105,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         items.add(SideItem("📊", "My Reports", "Menu", locked = isLocked("reports"), key = "reports") { open(ReportActivity::class.java) })
         items.add(SideItem("🎯", "Target vs Collection", "Menu", locked = isLocked("target"), key = "target") { open(TargetActivity::class.java) })
         items.add(SideItem("📋", "Surveys", "Menu", badge = pendingSurveys, locked = isLocked("survey"), key = "survey") { open(SurveyActivity::class.java) })
+        items.add(SideItem("🛒", "Orders", "Menu", key = "orders") { open(OrdersActivity::class.java) })
 
         items.add(SideItem("👤", "My Profile", "Settings", locked = isLocked("profile"), key = "profile") { open(ProfileActivity::class.java) })
         items.add(SideItem("🔑", "Change Password", "Settings", key = "password") { ChangePasswordDialog.show(this, session) })
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         pendingUpdate?.let { u ->
             items.add(SideItem("⬆️", "Update app (v${u.optString("versionName")})", "Settings", tint = "#2563EB", key = "update") { AppUpdate.offer(this, u) })
         }
+        if (AdminFlag.get(this)) items.add(SideItem("🏷", "Products", "Settings", key = "products") { open(ProductsActivity::class.java) })
         if (AdminFlag.get(this) && !isLocked("admin")) {
             // the Admin Panel carries its tabs as a sub-menu, in the order the admin chose; each one opens that tab
             val subs = MenuLayout.order(this, "admin").mapNotNull { AdminTabs.find(it) }.map { t ->

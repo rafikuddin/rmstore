@@ -33,6 +33,8 @@
         <activity android:name=".SurveyAdminActivity" android:exported="false" />
         <activity android:name=".AdminActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".OrdersActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ProductsActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <!-- Lets the camera app save a leave-application or profile photo into this app's private cache folder -->
         <provider android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider" android:exported="false" android:grantUriPermissions="true">

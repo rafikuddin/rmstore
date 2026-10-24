@@ -498,6 +498,11 @@ class AdminActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) }
             setOnClickListener { accessDialog(listOf(username), lockedNow, grantsNow) }
         })
+        col.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+            text = "👥  Change line manager"
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) }
+            setOnClickListener { changeManagerDialog(o) }
+        })
         if (!username.equals(session.username, ignoreCase = true)) {
             col.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
                 text = if (inactive) "✅  Make Active" else "⛔  Make Inactive"
@@ -522,6 +527,30 @@ class AdminActivity : AppCompatActivity() {
             })
         }
         return cardOf(col)
+    }
+
+    /** Admin: pick a new line manager (or none) for one person. The server asks for the admin password and refuses loops. */
+    private fun changeManagerDialog(o: JSONObject) {
+        val username = o.optString("username")
+        val others = users.filter { !it.optString("username").equals(username, true) }
+        val none = "— No manager —"
+        val labels = ArrayList<String>()
+        labels.add(none)
+        others.forEach { labels.add("${it.optString("name")}  (${it.optString("username")})") }
+        PickerDialog.show(this, "New line manager for ${o.optString("name")}", labels) { picked ->
+            val which = labels.indexOf(picked)
+            val newMgr = if (which <= 0) "" else others[which - 1].optString("username")
+            val shown = if (newMgr.isEmpty()) "no line manager" else picked
+            AlertDialog.Builder(this)
+                .setTitle("Change line manager?")
+                .setMessage("${o.optString("name")} will report to $shown.")
+                .setPositiveButton("Change") { _, _ ->
+                    adminApi(JSONObject().put("action", "adminSetManager").put("username", username).put("manager", newMgr)) { res, err ->
+                        if (res != null) { toast("Line manager changed"); loadUsers() } else toast(err ?: "Could not save")
+                    }
+                }
+                .setNegativeButton("Cancel", null).show()
+        }
     }
 
     /** Tick = the person MAY use it; untick = locked. [now] is the current locked list of one person (null when several are chosen). */
