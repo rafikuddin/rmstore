@@ -352,6 +352,10 @@ class OrdersActivity : AppCompatActivity() {
         if (o.optString("adminBy").isNotBlank()) col.addView(label("Admin ${o.optString("adminBy")} · ${o.optString("adminOn")}" + (if (o.optString("adminRemark").isNotBlank()) " — ${o.optString("adminRemark")}" else ""), 12f, "#8A5F52"))
         if (o.optString("deliveredOn").isNotBlank()) col.addView(label("Delivered · ${o.optString("deliveredOn")}", 12f, "#1D4ED8", true))
 
+        if (o.optString("challanNo").isNotBlank()) col.addView(label("🧾 Challan ${o.optString("challanNo")} · ${o.optString("challanOn")}", 13f, "#166534", true))
+        col.addView(button("🖨  Print order", outlined = true) { OrderPrint.print(this, o, false) })
+        if (o.optString("challanNo").isNotBlank() && (status == "Approved" || status == "Delivered"))
+            col.addView(button("🧾  Print challan ${o.optString("challanNo")}") { OrderPrint.print(this, o, true) })
         if (!review && (status == "Pending Manager" || status == "Pending Admin")) {
             col.addView(button("Cancel this order", outlined = true) {
                 AlertDialog.Builder(this).setTitle("Cancel order $id?").setMessage("It will not go any further.")
@@ -407,7 +411,8 @@ class OrdersActivity : AppCompatActivity() {
         if (remark.isNotEmpty()) body.put("remark", remark)
         api(body) { res, err ->
             if (res == null) { toast(err ?: "Could not save."); return@api }
-            toast("Done: " + res.optString("status"))
+            val ch = res.optString("challanNo")
+            toast(if (ch.isNotEmpty()) "Approved. Challan no: $ch" else "Done: " + res.optString("status"))
             productsLoaded = false
             show()
         }
