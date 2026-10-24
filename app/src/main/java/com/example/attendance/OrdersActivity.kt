@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,9 +23,11 @@ import org.json.JSONObject
 import java.util.Locale
 
 /**
- * Orders. Three pages: a new order (customer + products, quantity, price and discount), my orders, and Review
- * (a line manager sees the orders of the people who report to them and approves them on to the admin; an admin sees every
- * order, approves or rejects it, and marks approved ones delivered). The server decides who may do what.
+ * Orders. Three pages: a new order, my orders, and Review (a line manager sees the orders of the people who report to them and
+ * approves them on to the admin; an admin sees every order, approves or rejects it, and marks approved ones delivered).
+ *
+ * New order: 1) choose an APPROVED customer (code RPC-..), 2) tap products into the cart with + / -, (price and discount can be
+ * changed on each product), 3) "Review order" at the bottom shows the whole order and places it. The server decides who may do what.
  */
 class OrdersActivity : AppCompatActivity() {
     private lateinit var session: Session
@@ -34,23 +37,28 @@ class OrdersActivity : AppCompatActivity() {
     private var mode = "new"                        // new | mine | review
     private var reviewAll = false                   // review page: false = only what needs my decision
 
-    // the order being typed (kept when you switch pages)
+    // the order being built (kept when you switch pages)
     private class Line(val p: JSONObject, var qty: Int, var price: Double, var discount: Double = 0.0) {
         fun total(): Double = Math.round(qty * price * (1.0 - discount / 100.0) * 100.0) / 100.0
     }
     private val products = ArrayList<JSONObject>()
     private var productsLoaded = false
-    private val lines = ArrayList<Line>()
-    private var customer = ""
-    private var note = ""
+    private val cart = LinkedHashMap<String, Line>()
+    private val customers = ArrayList<JSONObject>()
+    private var customersLoaded = false
+    private var custCode = ""
+    private var custName = ""
+    private var custArea = ""
     private var brandFilter = ""
     private var categoryFilter = ""
+    private var query = ""
+    private var productBox: LinearLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         session = Session(this)
         if (!session.loggedIn) { finish(); return }
-        setContentView(R.layout.activity_notices)
+        setContentView(R.layout.activity_orders)
         setupHeader("Orders") { show() }
         setupBottomNav(null)
         content = findViewById(R.id.noticeList)
@@ -132,6 +140,7 @@ class OrdersActivity : AppCompatActivity() {
 
     private fun show() {
         content.removeAllViews()
+        productBox = null
         val tabs = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(10) }
@@ -145,6 +154,7 @@ class OrdersActivity : AppCompatActivity() {
             "mine" -> loadOrders("mine")
             else -> loadOrders("review")
         }
+        updateCart()
     }
 
     // ---------- new order ----------
@@ -166,130 +176,208 @@ class OrdersActivity : AppCompatActivity() {
             content.addView(label("There are no products yet. An admin adds them in the menu: Products.", 15f, "#8A5F52").apply { setPadding(dp(8), dp(12), dp(8), dp(12)) })
             return
         }
-        val form = column()
-        form.addView(label("ORDER FOR", 12f, "#6B352A", true))
-        val etCustomer = input("Customer / shop name", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS, customer)
-        watch(etCustomer) { customer = it }
-        form.addView(etCustomer)
-        form.addView(button("🏪  Choose an approved customer", outlined = true) { pickCustomer() })
-        val etNote = input("Note (optional)", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES, note)
-        watch(etNote) { note = it }
-        form.addView(etNote)
+        content.addView(customerCard())
 
         val brands = products.map { it.optString("brand") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
         val cats = products.map { it.optString("category") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
-        form.addView(label("PRODUCTS", 12f, "#6B352A", true).apply { setPadding(0, dp(14), 0, dp(4)) })
-        val filters = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        val bBrand = chip("Brand: " + (if (brandFilter.isEmpty()) "All" else brandFilter) + " ▾", false) { }
-        val bCat = chip("Category: " + (if (categoryFilter.isEmpty()) "All" else categoryFilter) + " ▾", false) { }
+        val search = SeekField(this, "Search product, SKU or brand")
+        search.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(e: Editable?) { query = e?.toString()?.trim().orEmpty(); fillProducts() }
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+        content.addView(search)
+        val filters = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8); bottomMargin = dp(8) }
+        }
+        val bBrand = chip("Brand: " + (if (brandFilter.isEmpty()) "All" else brandFilter) + " ▾", brandFilter.isNotEmpty()) { }
+        val bCat = chip("Category: " + (if (categoryFilter.isEmpty()) "All" else categoryFilter) + " ▾", categoryFilter.isNotEmpty()) { }
         bBrand.setOnClickListener {
-            val items = listOf("All brands") + brands
-            PickerDialog.show(this, "Brand", items) { picked -> brandFilter = if (picked == "All brands") "" else picked; bBrand.text = "Brand: " + (if (brandFilter.isEmpty()) "All" else brandFilter) + " ▾" }
+            PickerDialog.show(this, "Brand", listOf("All brands") + brands) { picked ->
+                brandFilter = if (picked == "All brands") "" else picked; show()
+            }
         }
         bCat.setOnClickListener {
-            val items = listOf("All categories") + cats
-            PickerDialog.show(this, "Category", items) { picked -> categoryFilter = if (picked == "All categories") "" else picked; bCat.text = "Category: " + (if (categoryFilter.isEmpty()) "All" else categoryFilter) + " ▾" }
+            PickerDialog.show(this, "Category", listOf("All categories") + cats) { picked ->
+                categoryFilter = if (picked == "All categories") "" else picked; show()
+            }
         }
         filters.addView(bBrand); filters.addView(bCat)
-        form.addView(filters)
-        form.addView(button("＋  Add product") { pickProduct() })
-        content.addView(cardOf(form))
-
+        content.addView(filters)
         val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        productBox = box
         content.addView(box)
-        val totalView = label("", 18f, "#6B352A", true).apply { setPadding(dp(8), dp(6), dp(8), dp(6)) }
-        content.addView(totalView)
-        content.addView(button("✅  Place order") { placeOrder() })
-        drawLines(box, totalView)
+        fillProducts()
     }
 
-    /** Fills the customer box with an approved customer (code and name). Typing a name by hand still works. */
+    /** The big card at the top: who the order is for. Only an approved customer (code RPC-..) can be chosen. */
+    private fun customerCard(): View {
+        val col = column()
+        if (custCode.isEmpty()) {
+            col.addView(label("🏪  Choose the customer", 17f, "#3E1D16", true))
+            col.addView(label("Only approved customers can be ordered for. Tap here to choose one.", 13f, "#8A5F52").apply { setPadding(0, dp(2), 0, 0) })
+        } else {
+            col.addView(label("ORDER FOR", 11f, "#8A5F52", true))
+            col.addView(label(custCode, 18f, "#166534", true))
+            col.addView(label(custName, 16f, "#3E1D16", true))
+            if (custArea.isNotBlank()) col.addView(label("📍 $custArea", 12f, "#8A5F52"))
+            col.addView(label("Tap to change", 12f, "#8A4333", true).apply { setPadding(0, dp(4), 0, 0) })
+        }
+        return cardOf(col).apply { isClickable = true; isFocusable = true; setOnClickListener { pickCustomer() } }
+    }
+
     private fun pickCustomer() {
+        val choose = {
+            if (customers.isEmpty()) toast("No approved customer yet. Ask for one in the menu: Customers.")
+            else {
+                val labels = customers.map { "${it.optString("code")}  ·  ${it.optString("name")}  ·  ${it.optString("thana")}, ${it.optString("district")}" }
+                PickerDialog.show(this, "Choose a customer", labels) { picked ->
+                    val c = customers[labels.indexOf(picked)]
+                    custCode = c.optString("code"); custName = c.optString("name")
+                    custArea = listOf(c.optString("thana"), c.optString("district")).filter { it.isNotBlank() }.joinToString(", ")
+                    show()
+                }
+            }
+        }
+        if (customersLoaded) { choose(); return }
         api(JSONObject().put("action", "customersApproved")) { res, err ->
             if (res == null) { toast(err ?: "Could not load the customers."); return@api }
+            customers.clear()
             val arr = res.optJSONArray("customers")
-            val list = ArrayList<JSONObject>()
-            if (arr != null) for (i in 0 until arr.length()) list.add(arr.getJSONObject(i))
-            if (list.isEmpty()) { toast("No approved customer yet. Ask for one in the menu: Customers."); return@api }
-            val labels = list.map { "${it.optString("code")}  ·  ${it.optString("name")}  ·  ${it.optString("thana")}, ${it.optString("district")}" }
-            PickerDialog.show(this, "Choose a customer", labels) { picked ->
-                val c = list[labels.indexOf(picked)]
-                customer = c.optString("code") + " · " + c.optString("name")
-                show()
-            }
+            if (arr != null) for (i in 0 until arr.length()) customers.add(arr.getJSONObject(i))
+            customersLoaded = true
+            choose()
         }
     }
 
-    private fun pickProduct() {
-        val list = products.filter {
-            (brandFilter.isEmpty() || it.optString("brand") == brandFilter) && (categoryFilter.isEmpty() || it.optString("category") == categoryFilter)
-        }
-        if (list.isEmpty()) { toast("No product matches this brand and category."); return }
-        val labels = list.map {
-            "${it.optString("name")}  ·  ${it.optString("brand")}  ·  ${it.optString("sku")}  ·  ${money(it.optDouble("price"))}/${it.optString("unit")}  ·  stock ${qtyText(it.optDouble("stock"))}"
-        }
-        PickerDialog.show(this, "Choose a product", labels) { picked ->
-            val p = list[labels.indexOf(picked)]
-            val existing = lines.firstOrNull { it.p.optString("sku").equals(p.optString("sku"), true) }
-            if (existing != null) existing.qty += 1 else lines.add(Line(p, 1, p.optDouble("price")))
-            show()
-        }
-    }
-
-    private fun drawLines(box: LinearLayout, totalView: TextView) {
+    private fun fillProducts() {
+        val box = productBox ?: return
         box.removeAllViews()
-        val lineTotals = ArrayList<TextView>()
-        fun refresh() {
-            var sum = 0.0
-            lines.forEachIndexed { i, l -> lineTotals[i].text = "Line total: " + money(l.total()); sum += l.total() }
-            totalView.text = if (lines.isEmpty()) "No products added yet" else "Order total: " + money(Math.round(sum * 100.0) / 100.0)
+        val shown = products.filter {
+            (brandFilter.isEmpty() || it.optString("brand") == brandFilter) && (categoryFilter.isEmpty() || it.optString("category") == categoryFilter) &&
+                (query.isEmpty() || it.optString("name").contains(query, true) || it.optString("sku").contains(query, true) ||
+                    it.optString("brand").contains(query, true) || it.optString("category").contains(query, true))
         }
-        lines.forEachIndexed { i, l ->
-            val col = column()
-            val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-            val names = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) }
-            names.addView(label(l.p.optString("name"), 16f, "#3E1D16", true))
-            names.addView(label("${l.p.optString("sku")} · ${l.p.optString("brand")} · ${l.p.optString("category")} · list ${money(l.p.optDouble("price"))}/${l.p.optString("unit")} · stock ${qtyText(l.p.optDouble("stock"))}", 12f, "#8A5F52"))
-            top.addView(names)
-            top.addView(label("✕", 20f, "#B91C1C", true).apply {
-                setPadding(dp(12), dp(4), dp(4), dp(4)); isClickable = true
-                setOnClickListener { lines.removeAt(i); show() }
-            })
-            col.addView(top)
-            val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(6), 0, 0) }
-            fun cell(title: String, e: EditText) {
-                val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(6) } }
-                c.addView(label(title, 11f, "#8A5F52", true)); c.addView(e); row.addView(c)
-            }
-            val eQty = input("Qty", InputType.TYPE_CLASS_NUMBER, l.qty.toString())
-            val ePrice = input("Price", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, qtyText(l.price))
-            val eDisc = input("%", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, if (l.discount == 0.0) "" else qtyText(l.discount))
-            cell("Quantity", eQty); cell("Unit price", ePrice); cell("Discount %", eDisc)
-            col.addView(row)
-            val lt = label("", 14f, "#6B352A", true).apply { setPadding(0, dp(6), 0, 0) }
-            lineTotals.add(lt); col.addView(lt)
-            watch(eQty) { l.qty = it.toIntOrNull() ?: 0; refresh() }
-            watch(ePrice) { l.price = it.toDoubleOrNull() ?: 0.0; refresh() }
-            watch(eDisc) { l.discount = it.toDoubleOrNull() ?: 0.0; refresh() }
-            box.addView(cardOf(col))
-        }
-        refresh()
+        box.addView(label("${shown.size} product${if (shown.size == 1) "" else "s"}", 12f, "#8A5F52", true).apply { setPadding(dp(6), dp(2), dp(6), dp(6)) })
+        if (shown.isEmpty()) box.addView(label("No product matches.", 15f, "#8A5F52").apply { setPadding(dp(8), dp(8), dp(8), dp(8)) })
+        shown.forEach { box.addView(productCard(it)) }
     }
 
-    private fun placeOrder() {
-        if (customer.isBlank()) { toast("Enter the customer or shop name."); return }
-        if (lines.isEmpty()) { toast("Add at least one product."); return }
-        val arr = JSONArray()
-        for (l in lines) {
-            if (l.qty < 1) { toast("Quantity of ${l.p.optString("name")} must be 1 or more."); return }
-            if (l.discount < 0 || l.discount > 100) { toast("Discount of ${l.p.optString("name")} must be 0 to 100."); return }
-            arr.put(JSONObject().put("sku", l.p.optString("sku")).put("qty", l.qty).put("price", l.price).put("discount", l.discount))
+    private fun stepButton(text: String, onClick: () -> Unit) = TextView(this).apply {
+        this.text = text; textSize = 20f; gravity = Gravity.CENTER; setTypeface(null, Typeface.BOLD)
+        setTextColor(Pal.c("#6B352A"))
+        background = GradientDrawable().apply { cornerRadius = dp(12).toFloat(); setColor(Pal.c("#F0E3A6")) }
+        layoutParams = LinearLayout.LayoutParams(dp(42), dp(42))
+        isClickable = true; isFocusable = true
+        setOnClickListener { onClick() }
+    }
+
+    private fun productCard(p: JSONObject): View {
+        val sku = p.optString("sku")
+        val stock = p.optDouble("stock")
+        val unit = p.optString("unit")
+        val col = column(14)
+        val r1 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        r1.addView(label(p.optString("name"), 16f, "#3E1D16", true).apply { layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) })
+        r1.addView(label(money(p.optDouble("price")) + " / " + unit, 14f, "#6B352A", true))
+        col.addView(r1)
+        col.addView(label("${p.optString("brand")}  ·  ${p.optString("category")}  ·  $sku", 12f, "#8A5F52"))
+        val r2 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(8), 0, 0) }
+        r2.addView(when {
+            stock <= 0 -> pill("Out of stock", "#B91C1C", "#FEE2E2")
+            stock <= 5 -> pill("Only ${qtyText(stock)} left", "#B45309", "#FEF3C7")
+            else -> pill("In stock ${qtyText(stock)}", "#166534", "#DCFCE7")
+        })
+        r2.addView(View(this).apply { layoutParams = LinearLayout.LayoutParams(0, 1, 1f) })
+        val controls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        r2.addView(controls)
+        col.addView(r2)
+        val editBox = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(8), 0, 0) }
+        col.addView(editBox)
+
+        fun render() {
+            controls.removeAllViews(); editBox.removeAllViews()
+            val line = cart[sku]
+            if (line == null) {
+                controls.addView(MaterialButton(this).apply {
+                    text = "＋ Add"; isEnabled = stock > 0
+                    setOnClickListener { cart[sku] = Line(p, 1, p.optDouble("price")); render(); updateCart() }
+                })
+                return
+            }
+            controls.addView(stepButton("−") {
+                if (line.qty <= 1) cart.remove(sku) else line.qty -= 1
+                render(); updateCart()
+            })
+            val eQty = input("Qty", InputType.TYPE_CLASS_NUMBER, line.qty.toString()).apply {
+                gravity = Gravity.CENTER; layoutParams = LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+            controls.addView(eQty)
+            controls.addView(stepButton("＋") {
+                if (line.qty + 1 > stock) toast("Only ${qtyText(stock)} $unit in stock.") else { line.qty += 1; render(); updateCart() }
+            })
+            fun cell(title: String, e: View) {
+                val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(6) } }
+                c.addView(label(title, 11f, "#8A5F52", true)); c.addView(e); editBox.addView(c)
+            }
+            val ePrice = input("Price", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, qtyText(line.price))
+            val eDisc = input("%", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, if (line.discount == 0.0) "" else qtyText(line.discount))
+            val lt = label(money(line.total()), 15f, "#6B352A", true).apply { setPadding(0, dp(10), 0, 0) }
+            cell("Unit price", ePrice); cell("Discount %", eDisc); cell("Amount", lt)
+            watch(eQty) { line.qty = it.toIntOrNull() ?: 0; lt.text = money(line.total()); updateCart() }
+            watch(ePrice) { line.price = it.toDoubleOrNull() ?: 0.0; lt.text = money(line.total()); updateCart() }
+            watch(eDisc) { line.discount = it.toDoubleOrNull() ?: 0.0; lt.text = money(line.total()); updateCart() }
         }
-        api(JSONObject().put("action", "orderCreate").put("customer", customer.trim()).put("note", note.trim()).put("lines", arr)) { res, err ->
+        render()
+        return cardOf(col)
+    }
+
+    /** The bar at the bottom: how many products and the total. Hidden unless this is the New order page with something in the cart. */
+    private fun updateCart() {
+        val bar = findViewById<LinearLayout>(R.id.cartBar) ?: return
+        if (mode != "new" || cart.isEmpty()) { bar.visibility = View.GONE; return }
+        bar.visibility = View.VISIBLE
+        val ls = cart.values.filter { it.qty > 0 }
+        val sum = Math.round(ls.sumOf { it.total() } * 100.0) / 100.0
+        findViewById<TextView>(R.id.cartText).text = "🛒 ${ls.size} product${if (ls.size == 1) "" else "s"}  ·  ${money(sum)}"
+        findViewById<MaterialButton>(R.id.cartBtn).setOnClickListener { reviewDialog() }
+    }
+
+    /** The whole order on one screen, with a note box, before it is sent. */
+    private fun reviewDialog() {
+        if (custCode.isEmpty()) { toast("Choose the customer first (tap the customer card)."); return }
+        val ls = cart.values.toList()
+        for (l in ls) {
+            val name = l.p.optString("name")
+            if (l.qty < 1) { toast("Quantity of $name must be 1 or more."); return }
+            if (l.qty > l.p.optDouble("stock")) { toast("Only ${qtyText(l.p.optDouble("stock"))} of $name in stock."); return }
+            if (l.discount < 0 || l.discount > 100) { toast("Discount of $name must be 0 to 100."); return }
+        }
+        val col = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(20), dp(12), dp(20), dp(4)) }
+        col.addView(label(custCode, 17f, "#166534", true))
+        col.addView(label(custName, 15f, "#3E1D16", true))
+        ls.forEach { l ->
+            col.addView(label("• ${l.p.optString("name")} × ${l.qty} @ ${qtyText(l.price)}" + (if (l.discount > 0) " −${qtyText(l.discount)}%" else "") + "  =  ${money(l.total())}", 13f, "#3E1D16")
+                .apply { setPadding(0, dp(6), 0, 0) })
+        }
+        val sum = Math.round(ls.sumOf { it.total() } * 100.0) / 100.0
+        col.addView(label("Total: " + money(sum), 18f, "#6B352A", true).apply { setPadding(0, dp(12), 0, dp(6)) })
+        val etNote = input("Note (optional)", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+        col.addView(etNote)
+        AlertDialog.Builder(this).setTitle("Review order").setView(ScrollView(this).apply { addView(col) })
+            .setPositiveButton("✅ Place order") { _, _ -> placeOrder(etNote.text.toString().trim()) }
+            .setNegativeButton("Back", null).show()
+    }
+
+    private fun placeOrder(note: String) {
+        val arr = JSONArray()
+        for (l in cart.values) arr.put(JSONObject().put("sku", l.p.optString("sku")).put("qty", l.qty).put("price", l.price).put("discount", l.discount))
+        api(JSONObject().put("action", "orderCreate").put("customerCode", custCode).put("note", note).put("lines", arr)) { res, err ->
             if (res == null) { toast(err ?: "Could not place the order."); return@api }
             val st = res.optString("status")
             toast("Order ${res.optString("id")} placed. " + if (st == "Pending Manager") "Waiting for your line manager." else "Waiting for the admin.")
-            lines.clear(); customer = ""; note = ""
+            cart.clear(); custCode = ""; custName = ""; custArea = ""
             productsLoaded = false                // stock may have changed
             mode = "mine"; show()
         }
