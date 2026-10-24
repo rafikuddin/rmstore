@@ -321,12 +321,11 @@ class OrdersActivity : AppCompatActivity() {
                 val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(6) } }
                 c.addView(label(title, 11f, "#8A5F52", true)); c.addView(e); editBox.addView(c)
             }
-            val ePrice = input("Price", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, qtyText(line.price))
+            val ePrice = label(money(line.price), 15f, "#3E1D16", true).apply { setPadding(0, dp(10), 0, 0) }      // fixed: only the discount can be changed
             val eDisc = input("%", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, if (line.discount == 0.0) "" else qtyText(line.discount))
             val lt = label(money(line.total()), 15f, "#6B352A", true).apply { setPadding(0, dp(10), 0, 0) }
-            cell("Unit price", ePrice); cell("Discount %", eDisc); cell("Amount", lt)
+            cell("Unit price (fixed)", ePrice); cell("Discount %", eDisc); cell("Amount", lt)
             watch(eQty) { line.qty = it.toIntOrNull() ?: 0; lt.text = money(line.total()); updateCart() }
-            watch(ePrice) { line.price = it.toDoubleOrNull() ?: 0.0; lt.text = money(line.total()); updateCart() }
             watch(eDisc) { line.discount = it.toDoubleOrNull() ?: 0.0; lt.text = money(line.total()); updateCart() }
         }
         render()
