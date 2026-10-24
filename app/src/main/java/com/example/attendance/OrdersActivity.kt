@@ -277,27 +277,31 @@ class OrdersActivity : AppCompatActivity() {
         val sku = p.optString("sku")
         val stock = p.optDouble("stock")
         val unit = p.optString("unit")
-        val col = column(14)
-        val r1 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        r1.addView(label(p.optString("name"), 16f, "#3E1D16", true).apply { layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) })
-        r1.addView(label(money(p.optDouble("price")) + " / " + unit, 14f, "#6B352A", true))
-        col.addView(r1)
-        col.addView(label("${p.optString("brand")}  ·  ${p.optString("category")}  ·  $sku", 12f, "#8A5F52"))
-        val r2 = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(8), 0, 0) }
-        r2.addView(when {
+        val col = column(12)
+        val main = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        main.addView(productThumb(session, p.optString("image"), 84).apply { (layoutParams as LinearLayout.LayoutParams).marginEnd = dp(12) })
+        val info = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) }
+        info.addView(label(p.optString("name"), 16f, "#3E1D16", true))
+        info.addView(label(money(p.optDouble("price")) + " / " + unit, 15f, "#B91C1C", true))
+        info.addView(label("${p.optString("brand")}  ·  ${p.optString("category")}  ·  $sku", 11f, "#8A5F52"))
+        val pillRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(6), 0, 0) }
+        pillRow.addView(when {
             stock <= 0 -> pill("Out of stock", "#B91C1C", "#FEE2E2")
             stock <= 5 -> pill("Only ${qtyText(stock)} left", "#B45309", "#FEF3C7")
             else -> pill("In stock ${qtyText(stock)}", "#166534", "#DCFCE7")
         })
-        r2.addView(View(this).apply { layoutParams = LinearLayout.LayoutParams(0, 1, 1f) })
-        val controls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        r2.addView(controls)
-        col.addView(r2)
+        info.addView(pillRow)
+        val controls = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(8), 0, 0) }
+        info.addView(controls)
+        main.addView(info)
+        val side = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.END }
+        main.addView(side)
+        col.addView(main)
         val editBox = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(8), 0, 0) }
         col.addView(editBox)
 
         fun render() {
-            controls.removeAllViews(); editBox.removeAllViews()
+            controls.removeAllViews(); editBox.removeAllViews(); side.removeAllViews()
             val line = cart[sku]
             if (line == null) {
                 controls.addView(MaterialButton(this).apply {
@@ -306,12 +310,17 @@ class OrdersActivity : AppCompatActivity() {
                 })
                 return
             }
+            side.addView(label("Remove", 12f, "#FFFFFF", true).apply {
+                setPadding(dp(12), dp(6), dp(12), dp(6)); isClickable = true
+                background = GradientDrawable().apply { cornerRadius = dp(10).toFloat(); setColor(Pal.c("#DC2626")) }
+                setOnClickListener { cart.remove(sku); render(); updateCart() }
+            })
             controls.addView(stepButton("−") {
                 if (line.qty <= 1) cart.remove(sku) else line.qty -= 1
                 render(); updateCart()
             })
             val eQty = input("Qty", InputType.TYPE_CLASS_NUMBER, line.qty.toString()).apply {
-                gravity = Gravity.CENTER; layoutParams = LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.WRAP_CONTENT)
+                gravity = Gravity.CENTER; layoutParams = LinearLayout.LayoutParams(dp(60), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
             controls.addView(eQty)
             controls.addView(stepButton("＋") {
@@ -321,10 +330,9 @@ class OrdersActivity : AppCompatActivity() {
                 val c = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(6) } }
                 c.addView(label(title, 11f, "#8A5F52", true)); c.addView(e); editBox.addView(c)
             }
-            val ePrice = label(money(line.price), 15f, "#3E1D16", true).apply { setPadding(0, dp(10), 0, 0) }      // fixed: only the discount can be changed
             val eDisc = input("%", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, if (line.discount == 0.0) "" else qtyText(line.discount))
             val lt = label(money(line.total()), 15f, "#6B352A", true).apply { setPadding(0, dp(10), 0, 0) }
-            cell("Unit price (fixed)", ePrice); cell("Discount %", eDisc); cell("Amount", lt)
+            cell("Discount %", eDisc); cell("Amount", lt)
             watch(eQty) { line.qty = it.toIntOrNull() ?: 0; lt.text = money(line.total()); updateCart() }
             watch(eDisc) { line.discount = it.toDoubleOrNull() ?: 0.0; lt.text = money(line.total()); updateCart() }
         }

@@ -1,17 +1,21 @@
 package com.example.attendance
 
 import android.app.AlertDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Base64
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -20,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.util.Locale
 
 /**
@@ -32,6 +37,7 @@ class ProductsActivity : AppCompatActivity() {
     private lateinit var etSearch: SeekField
     private val products = ArrayList<JSONObject>()
     private var query = ""
+    private val picker = PicturePicker(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +122,7 @@ class ProductsActivity : AppCompatActivity() {
         val names = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) }
         names.addView(label(p.optString("name"), 16f, "#3E1D16", true))
         names.addView(label("SKU: ${p.optString("sku")}  ·  ${p.optString("brand")}  ·  ${p.optString("category")}", 12f, "#8A5F52"))
+        top.addView(productThumb(session, p.optString("image"), 56).apply { (layoutParams as LinearLayout.LayoutParams).marginEnd = dp(12) })
         top.addView(names)
         top.addView(if (p.optBoolean("active", true)) pill("Active", "#166534", "#DCFCE7") else pill("Off", "#B91C1C", "#FEE2E2"))
         col.addView(top)
@@ -140,6 +147,22 @@ class ProductsActivity : AppCompatActivity() {
         setOnClickListener { if (values.isEmpty()) toast("Nothing to choose from yet.") else PickerDialog.show(this@ProductsActivity, text.trim(), values) { target.setText(it) } }
     }
 
+    /** Makes a small JPEG (longest side 480 px, about 30-100 KB) so the product list loads quickly on a phone. */
+    private fun shrink(src: ByteArray): ByteArray? {
+        val bmp = BitmapFactory.decodeByteArray(src, 0, src.size) ?: return null
+        val scale = minOf(1f, 480f / maxOf(bmp.width, bmp.height))
+        val out = if (scale < 1f) Bitmap.createScaledBitmap(bmp, maxOf(1, (bmp.width * scale).toInt()), maxOf(1, (bmp.height * scale).toInt()), true) else bmp
+        var quality = 85
+        var bytes: ByteArray
+        do {
+            val bo = ByteArrayOutputStream()
+            out.compress(Bitmap.CompressFormat.JPEG, quality, bo)
+            bytes = bo.toByteArray()
+            quality -= 10
+        } while (bytes.size > 120_000 && quality > 30)
+        return if (bytes.size < 600) null else bytes
+    }
+
     /** Add (p == null) or edit one product. */
     private fun editDialog(p: JSONObject?) {
         val isNew = p == null
@@ -153,12 +176,39 @@ class ProductsActivity : AppCompatActivity() {
         val etStock = input("Stock quantity", InputType.TYPE_CLASS_NUMBER, if (p == null) "0" else num(p.optDouble("stock")))
         val cbActive = CheckBox(this).apply { text = "Active (can be ordered)"; isChecked = p?.optBoolean("active", true) ?: true }
         val error = label("", 14f, "#DC2626")
+        // the picture of this SKU: a new one is shrunk to a small JPEG here, then sent with Save
+        var pendingImage: ByteArray? = null
+        var removeImage = false
+        val thumb = productThumb(session, p?.optString("image") ?: "", 84)
+        val thumbImage = thumb.getChildAt(1) as ImageView
+        val btnPick = label("📷  Choose picture", 14f, "#6B352A", true).apply {
+            setPadding(dp(12), dp(8), dp(12), dp(8)); isClickable = true
+            setOnClickListener {
+                picker.choose { raw ->
+                    val small = shrink(raw)
+                    if (small == null) toast("That picture could not be used.")
+                    else {
+                        pendingImage = small; removeImage = false
+                        thumbImage.setImageBitmap(BitmapFactory.decodeByteArray(small, 0, small.size))
+                    }
+                }
+            }
+        }
+        val btnClear = label("✕  Remove picture", 14f, "#B91C1C", true).apply {
+            setPadding(dp(12), dp(8), dp(12), dp(8)); isClickable = true
+            setOnClickListener { pendingImage = null; removeImage = true; thumbImage.setImageDrawable(null) }
+        }
+        val picRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(4), 0, dp(8))
+            addView(thumb.apply { (layoutParams as LinearLayout.LayoutParams).marginEnd = dp(8) })
+            addView(LinearLayout(this@ProductsActivity).apply { orientation = LinearLayout.VERTICAL; addView(btnPick); addView(btnClear) })
+        }
         val brands = products.map { it.optString("brand") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
         val cats = products.map { it.optString("category") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
         val pad = dp(16)
         val col = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(pad, pad, pad, 0)
-            addView(etSku); addView(etName); addView(etBrand); addView(pickButton("▾ Pick an existing brand", brands, etBrand))
+            addView(picRow); addView(etSku); addView(etName); addView(etBrand); addView(pickButton("▾ Pick an existing brand", brands, etBrand))
             addView(etCat); addView(pickButton("▾ Pick an existing category", cats, etCat))
             addView(etPrice); addView(etUnit); addView(etStock); addView(cbActive); addView(error)
         }
@@ -182,6 +232,8 @@ class ProductsActivity : AppCompatActivity() {
                             .put("category", etCat.text.toString().trim()).put("price", etPrice.text.toString().toDouble())
                             .put("unit", etUnit.text.toString().trim()).put("stock", etStock.text.toString().toLong())
                             .put("active", cbActive.isChecked)
+                        pendingImage?.let { body.put("image", Base64.encodeToString(it, Base64.NO_WRAP)) }
+                        if (pendingImage == null && removeImage) body.put("removeImage", true)
                         api(body) { res, err ->
                             if (res != null) { dialog.dismiss(); setProducts(res); draw(); toast("Saved") } else error.text = err ?: "Could not save."
                         }
