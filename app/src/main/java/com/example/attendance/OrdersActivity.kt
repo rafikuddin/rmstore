@@ -171,6 +171,7 @@ class OrdersActivity : AppCompatActivity() {
         val etCustomer = input("Customer / shop name", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS, customer)
         watch(etCustomer) { customer = it }
         form.addView(etCustomer)
+        form.addView(button("🏪  Choose an approved customer", outlined = true) { pickCustomer() })
         val etNote = input("Note (optional)", InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES, note)
         watch(etNote) { note = it }
         form.addView(etNote)
@@ -200,6 +201,23 @@ class OrdersActivity : AppCompatActivity() {
         content.addView(totalView)
         content.addView(button("✅  Place order") { placeOrder() })
         drawLines(box, totalView)
+    }
+
+    /** Fills the customer box with an approved customer (code and name). Typing a name by hand still works. */
+    private fun pickCustomer() {
+        api(JSONObject().put("action", "customersApproved")) { res, err ->
+            if (res == null) { toast(err ?: "Could not load the customers."); return@api }
+            val arr = res.optJSONArray("customers")
+            val list = ArrayList<JSONObject>()
+            if (arr != null) for (i in 0 until arr.length()) list.add(arr.getJSONObject(i))
+            if (list.isEmpty()) { toast("No approved customer yet. Ask for one in the menu: Customers."); return@api }
+            val labels = list.map { "${it.optString("code")}  ·  ${it.optString("name")}  ·  ${it.optString("thana")}, ${it.optString("district")}" }
+            PickerDialog.show(this, "Choose a customer", labels) { picked ->
+                val c = list[labels.indexOf(picked)]
+                customer = c.optString("code") + " · " + c.optString("name")
+                show()
+            }
+        }
     }
 
     private fun pickProduct() {
