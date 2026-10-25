@@ -136,15 +136,42 @@ class ProductsActivity : AppCompatActivity() {
         }
     }
 
+    private fun roundBg(fill: String, stroke: String?, radius: Int) = GradientDrawable().apply {
+        cornerRadius = dp(radius).toFloat(); setColor(Pal.c(fill)); if (stroke != null) setStroke(dp(1), Pal.c(stroke))
+    }
+
     private fun input(hint: String, type: Int, start: String = "") = EditText(this).apply {
-        this.hint = hint; inputType = type; setText(start)
-        setTextColor(Pal.c("#3E1D16")); setHintTextColor(Pal.c("#A98578"))
+        this.hint = hint; inputType = type; setText(start); textSize = 15f
+        setTextColor(Pal.c("#3E1D16")); setHintTextColor(Pal.c("#B8A096"))
+        background = roundBg("#FBF7F2", "#E4D3C8", 14)
+        setPadding(dp(14), dp(12), dp(14), dp(12))
+    }
+
+    /** A caption above a rounded field, with an optional small action (like "Pick existing") on the right. */
+    private fun field(caption: String, et: EditText, action: View? = null): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        addView(LinearLayout(this@ProductsActivity).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+            addView(label(caption, 12f, "#8A5F52", true), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            if (action != null) addView(action)
+        })
+        addView(et, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) }
+    }
+
+    private fun section(title: String, vararg rows: View): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL; setPadding(dp(14), dp(12), dp(14), dp(14))
+        background = roundBg("#FFFFFF", "#EFE3DA", 20)
+        addView(label(title, 14f, "#6B352A", true))
+        rows.forEach { addView(it) }
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
     }
 
     private fun pickButton(text: String, values: List<String>, target: EditText) = TextView(this).apply {
-        this.text = text; textSize = 13f; setTextColor(Pal.c("#6B352A"))
-        setPadding(dp(4), dp(2), dp(4), dp(6)); isClickable = true
-        setOnClickListener { if (values.isEmpty()) toast("Nothing to choose from yet.") else PickerDialog.show(this@ProductsActivity, text.trim(), values) { target.setText(it) } }
+        this.text = text; textSize = 12f; setTextColor(Pal.c("#6B352A")); typeface = Typeface.DEFAULT_BOLD
+        setPadding(dp(10), dp(3), dp(10), dp(3)); isClickable = true
+        background = roundBg("#F0E3A6", null, 12)
+        setOnClickListener { if (values.isEmpty()) toast("Nothing to choose from yet.") else PickerDialog.show(this@ProductsActivity, "Choose", values) { target.setText(it) } }
     }
 
     /** Makes a small JPEG (longest side 480 px, about 30-100 KB) so the product list loads quickly on a phone. */
@@ -174,15 +201,15 @@ class ProductsActivity : AppCompatActivity() {
         val etPrice = input("Price", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL, if (p == null) "" else num(p.optDouble("price")))
         val etUnit = input("Unit (pcs, box, kg…)", InputType.TYPE_CLASS_TEXT, p?.optString("unit") ?: "pcs")
         val etStock = input("Stock quantity", InputType.TYPE_CLASS_NUMBER, if (p == null) "0" else num(p.optDouble("stock")))
-        val cbActive = CheckBox(this).apply { text = "Active (can be ordered)"; isChecked = p?.optBoolean("active", true) ?: true }
+        val swActive = androidx.appcompat.widget.SwitchCompat(this).apply { isChecked = p?.optBoolean("active", true) ?: true }
         val error = label("", 14f, "#DC2626")
         // the picture of this SKU: a new one is shrunk to a small JPEG here, then sent with Save
         var pendingImage: ByteArray? = null
         var removeImage = false
         val thumb = productThumb(session, p?.optString("image") ?: "", 84)
         val thumbImage = thumb.getChildAt(1) as ImageView
-        val btnPick = label("📷  Choose picture", 14f, "#6B352A", true).apply {
-            setPadding(dp(12), dp(8), dp(12), dp(8)); isClickable = true
+        val btnPick = label("📷  Choose picture", 13f, "#6B352A", true).apply {
+            setPadding(dp(14), dp(8), dp(14), dp(8)); isClickable = true; background = roundBg("#F0E3A6", null, 20)
             setOnClickListener {
                 picker.choose { raw ->
                     val small = shrink(raw)
@@ -194,29 +221,79 @@ class ProductsActivity : AppCompatActivity() {
                 }
             }
         }
-        val btnClear = label("✕  Remove picture", 14f, "#B91C1C", true).apply {
-            setPadding(dp(12), dp(8), dp(12), dp(8)); isClickable = true
+        val btnClear = label("✕  Remove", 13f, "#B91C1C", true).apply {
+            setPadding(dp(14), dp(8), dp(14), dp(8)); isClickable = true; background = roundBg("#FEE2E2", null, 20)
             setOnClickListener { pendingImage = null; removeImage = true; thumbImage.setImageDrawable(null) }
-        }
-        val picRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(4), 0, dp(8))
-            addView(thumb.apply { (layoutParams as LinearLayout.LayoutParams).marginEnd = dp(8) })
-            addView(LinearLayout(this@ProductsActivity).apply { orientation = LinearLayout.VERTICAL; addView(btnPick); addView(btnClear) })
         }
         val brands = products.map { it.optString("brand") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
         val cats = products.map { it.optString("category") }.filter { it.isNotBlank() }.distinct().sortedBy { it.lowercase() }
-        val pad = dp(16)
-        val col = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL; setPadding(pad, pad, pad, 0)
-            addView(picRow); addView(etSku); addView(etName); addView(etBrand); addView(pickButton("▾ Pick an existing brand", brands, etBrand))
-            addView(etCat); addView(pickButton("▾ Pick an existing category", cats, etCat))
-            addView(etPrice); addView(etUnit); addView(etStock); addView(cbActive); addView(error)
+
+        // ---- header band ----
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(20), dp(18), dp(20), dp(18))
+            background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(Pal.c("#6B352A"), Pal.c("#A0604C"))).apply {
+                cornerRadii = floatArrayOf(dp(28).toFloat(), dp(28).toFloat(), dp(28).toFloat(), dp(28).toFloat(), 0f, 0f, 0f, 0f)
+            }
+            addView(label("📦", 28f, "#FFFFFF", false).apply { setPadding(0, 0, dp(12), 0) })
+            addView(LinearLayout(this@ProductsActivity).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(label(if (isNew) "New product" else "Edit product", 20f, "#FFFFFF", true))
+                addView(label(if (isNew) "Add it to the catalogue" else "SKU ${p?.optString("sku")}", 12f, "#F0E3D8", false))
+            })
         }
-        val dialog = AlertDialog.Builder(this).setTitle(if (isNew) "Add new product" else "Edit product")
-            .setView(ScrollView(this).apply { addView(col) })
-            .setPositiveButton("Save", null).setNegativeButton("Cancel", null).create()
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        // ---- picture ----
+        val picBox = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
+            addView(thumb.apply { (layoutParams as LinearLayout.LayoutParams).gravity = Gravity.CENTER_HORIZONTAL })
+            addView(LinearLayout(this@ProductsActivity).apply {
+                orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER; setPadding(0, dp(10), 0, 0)
+                addView(btnPick); addView(btnClear, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
+            })
+        }
+        val priceUnit = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(field("PRICE (৳)", etPrice), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(8) })
+            addView(field("UNIT", etUnit), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(8) })
+        }
+        val activeRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = roundBg("#FFFFFF", "#EFE3DA", 20)
+            addView(LinearLayout(this@ProductsActivity).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(label("Active", 15f, "#3E1D16", true)); addView(label("Users can order it", 12f, "#8A5F52", false))
+            }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            addView(swActive)
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
+        }
+        val btnCancel = label("Cancel", 15f, "#6B352A", true).apply { setPadding(dp(18), dp(12), dp(18), dp(12)); isClickable = true }
+        val btnSave = MaterialButton(this).apply {
+            text = "Save product"; isAllCaps = false; textSize = 15f; cornerRadius = dp(24)
+            setBackgroundColor(Pal.c("#6B352A")); setTextColor(Pal.c("#FFFFFF"))
+        }
+        val buttons = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL or Gravity.END
+            addView(btnCancel); addView(btnSave, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48)).apply { marginStart = dp(6) })
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) }
+        }
+        val body = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(16), dp(16), dp(16))
+            addView(picBox)
+            addView(section("BASIC INFO", field("SKU (CODE)", etSku), field("PRODUCT NAME", etName)))
+            addView(section("CLASSIFICATION", field("BRAND", etBrand, pickButton("▾ Pick existing", brands, etBrand)), field("CATEGORY", etCat, pickButton("▾ Pick existing", cats, etCat))))
+            addView(section("PRICE & STOCK", priceUnit, field("STOCK QUANTITY", etStock)))
+            addView(activeRow)
+            addView(error.apply { setPadding(dp(4), dp(8), dp(4), 0) })
+            addView(buttons)
+        }
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; background = roundBg("#F7F0EA", null, 28)
+            addView(header)
+            addView(ScrollView(this@ProductsActivity).apply { isVerticalScrollBarEnabled = false; addView(body) }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+        }
+        val dialog = AlertDialog.Builder(this).setView(root).create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        btnCancel.setOnClickListener { dialog.dismiss() }
+        btnSave.setOnClickListener {
                 val sku = etSku.text.toString().trim()
                 when {
                     sku.isEmpty() -> error.text = "Enter the SKU"
@@ -227,19 +304,18 @@ class ProductsActivity : AppCompatActivity() {
                     etStock.text.toString().toLongOrNull() == null -> error.text = "Stock must be a whole number"
                     else -> {
                         error.text = "Saving…"
-                        val body = JSONObject().put("action", "adminSaveProduct").put("isNew", isNew).put("sku", sku)
+                        val req = JSONObject().put("action", "adminSaveProduct").put("isNew", isNew).put("sku", sku)
                             .put("name", etName.text.toString().trim()).put("brand", etBrand.text.toString().trim())
                             .put("category", etCat.text.toString().trim()).put("price", etPrice.text.toString().toDouble())
                             .put("unit", etUnit.text.toString().trim()).put("stock", etStock.text.toString().toLong())
-                            .put("active", cbActive.isChecked)
-                        pendingImage?.let { body.put("image", Base64.encodeToString(it, Base64.NO_WRAP)) }
-                        if (pendingImage == null && removeImage) body.put("removeImage", true)
-                        api(body) { res, err ->
+                            .put("active", swActive.isChecked)
+                        pendingImage?.let { req.put("image", Base64.encodeToString(it, Base64.NO_WRAP)) }
+                        if (pendingImage == null && removeImage) req.put("removeImage", true)
+                        api(req) { res, err ->
                             if (res != null) { dialog.dismiss(); setProducts(res); draw(); toast("Saved") } else error.text = err ?: "Could not save."
                         }
                     }
                 }
-            }
         }
         dialog.show()
     }
