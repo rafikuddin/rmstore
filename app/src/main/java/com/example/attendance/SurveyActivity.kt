@@ -50,7 +50,7 @@ class SurveyActivity : AppCompatActivity() {
         if (!session.loggedIn) { finish(); return }
         setContentView(R.layout.activity_notices)
         setupHeader("Surveys") { if (!inForm) load() }
-        setupBottomNav(null)
+        setupNav("survey")
         enforceAccess("survey")
         content = findViewById(R.id.noticeList)
         findViewById<TextView>(R.id.btnBack).setOnClickListener { onBackPressedDispatcher.onBackPressed() }

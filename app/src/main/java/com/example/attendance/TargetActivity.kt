@@ -33,7 +33,7 @@ class TargetActivity : AppCompatActivity() {
         if (!session.loggedIn) { finish(); return }
         setContentView(R.layout.activity_notices)
         setupHeader("Target vs Collection") { load() }
-        setupBottomNav(null)
+        setupNav("target")
         enforceAccess("target")
         content = findViewById(R.id.noticeList)
         load()

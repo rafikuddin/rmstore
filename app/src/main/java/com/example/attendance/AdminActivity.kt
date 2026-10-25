@@ -212,6 +212,120 @@ class AdminActivity : AppCompatActivity() {
     )
 
     /** The order of the side menu, its Settings group and the Admin Panel tabs. Move with ▲ ▼, then Save: it applies to everyone. */
+    /** Menu tab, second part: which dashboard blocks Home shows (and in what order) and which buttons the bottom bar has. */
+    private fun addHomeLayoutSection(id: Int) {
+        val status = note("Loading the Home screen settings…")
+        content.addView(status)
+        api(JSONObject().put("action", "adminHomeLayout")) { res, err ->
+            if (id != loadId) return@api
+            content.removeView(status)
+            if (res == null) { content.addView(note(err ?: "Could not load the Home screen settings.")); return@api }
+            val lay = res.getJSONObject("layout")
+            fun keys(o: JSONObject, n: String): MutableList<String> {
+                val a = o.optJSONArray(n); val out = ArrayList<String>()
+                if (a != null) for (i in 0 until a.length()) out.add(a.getString(i))
+                return out
+            }
+            val order = keys(lay, "order")
+            val hidden = keys(lay, "hidden").toMutableSet()
+            val nav = keys(lay, "nav")
+            val navMax = res.optInt("navMax", HomeLayout.NAV_MAX)
+            val savedSig = order.joinToString() + "|" + hidden.sorted().joinToString() + "|" + nav.joinToString()
+
+            val intro = column()
+            intro.addView(label("🏠  Home screen", 16f, "#3E1D16", true))
+            intro.addView(label("Tick what Home shows, move blocks up or down, and choose the buttons of the bottom bar. It applies to everyone, the next time Home loads.", 13f, "#8A5F52", false))
+            content.addView(cardOf(intro))
+
+            val dash = column(); val dashRows = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            dash.addView(label("Dashboard blocks (top to bottom)", 15f, "#3E1D16", true)); dash.addView(dashRows)
+            content.addView(cardOf(dash))
+            val tilesCard = column(); val tileRows = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            tilesCard.addView(label("Small quick tiles", 15f, "#3E1D16", true)); tilesCard.addView(tileRows)
+            content.addView(cardOf(tilesCard))
+            val bar = column(); val barRows = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            bar.addView(label("Bottom bar (left to right, up to $navMax buttons)", 15f, "#3E1D16", true)); bar.addView(barRows)
+            content.addView(cardOf(bar))
+            val addCard = column(); val addRows = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            addCard.addView(label("Add to the bottom bar", 15f, "#3E1D16", true)); addCard.addView(addRows)
+            content.addView(cardOf(addCard))
+
+            fun arrow(t: String, enabled: Boolean, onTap: () -> Unit) = TextView(this).apply {
+                text = t; textSize = 16f; gravity = Gravity.CENTER; setTextColor(Pal.c("#6B352A")); alpha = if (enabled) 1f else 0.25f
+                background = GradientDrawable().apply { cornerRadius = dp(12).toFloat(); setColor(Pal.c("#F0E3A6")) }
+                isClickable = enabled; isFocusable = enabled
+                if (enabled) setOnClickListener { onTap() }
+                layoutParams = LinearLayout.LayoutParams(dp(44), dp(38)).apply { marginStart = dp(6) }
+            }
+            fun line() = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(0, dp(2), 0, dp(2)) }
+
+            lateinit var draw: () -> Unit
+            draw = {
+                dashRows.removeAllViews()
+                order.forEachIndexed { i, k ->
+                    val row = line()
+                    row.addView(CheckBox(this).apply {
+                        text = HomeLayout.blockNames[k] ?: k; textSize = 15f; setTextColor(Pal.c("#6B352A")); isChecked = k !in hidden
+                        setOnCheckedChangeListener { _, on -> if (on) hidden.remove(k) else hidden.add(k) }
+                    }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                    row.addView(arrow("▲", i > 0) { val x = order.removeAt(i); order.add(i - 1, x); draw() })
+                    row.addView(arrow("▼", i < order.size - 1) { val x = order.removeAt(i); order.add(i + 1, x); draw() })
+                    dashRows.addView(row)
+                }
+                tileRows.removeAllViews()
+                for ((k, _) in HomeLayout.tiles) {
+                    tileRows.addView(CheckBox(this).apply {
+                        text = HomeLayout.tileNames[k] ?: k; textSize = 15f; setTextColor(Pal.c("#6B352A")); isChecked = k !in hidden
+                        setOnCheckedChangeListener { _, on -> if (on) hidden.remove(k) else hidden.add(k) }
+                    })
+                }
+                barRows.removeAllViews()
+                nav.forEachIndexed { i, k ->
+                    val item = NavItems.find(k)
+                    val row = line()
+                    row.addView(label("${i + 1}", 12f, "#A98578", true).apply { minWidth = dp(22) })
+                    row.addView(label("${item?.icon ?: ""}  ${item?.label ?: k}" + (if (k == "home") "  (always first)" else if (k == "team") "  (line managers only)" else ""), 15f, "#6B352A", false),
+                        LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                    if (k != "home") {
+                        row.addView(arrow("▲", i > 1) { val x = nav.removeAt(i); nav.add(i - 1, x); draw() })
+                        row.addView(arrow("▼", i < nav.size - 1) { val x = nav.removeAt(i); nav.add(i + 1, x); draw() })
+                        row.addView(arrow("✕", true) { nav.removeAt(i); draw() })
+                    }
+                    barRows.addView(row)
+                }
+                addRows.removeAllViews()
+                val free = NavItems.all.filter { it.key !in nav }
+                if (free.isEmpty()) addRows.addView(note("Everything is already in the bar."))
+                for (it2 in free) {
+                    val row = line()
+                    row.addView(label("${it2.icon}  ${it2.label}", 15f, "#6B352A", false), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                    row.addView(arrow("＋", nav.size < navMax) { nav.add(it2.key); draw() })
+                    addRows.addView(row)
+                }
+                if (nav.size >= navMax) addRows.addView(note("The bar is full. Remove a button (✕) to add another."))
+            }
+            draw()
+
+            val msg = label("", 14f, "#DC2626", false).apply { setPadding(dp(4), 0, dp(4), dp(4)) }
+            content.addView(msg)
+            content.addView(bigButton("💾  Save the Home screen") {
+                if (order.joinToString() + "|" + hidden.sorted().joinToString() + "|" + nav.joinToString() == savedSig) { msg.setTextColor(Pal.c("#8A5F52")); msg.text = "Nothing changed."; return@bigButton }
+                if (nav.size < 2) { msg.setTextColor(Pal.c("#DC2626")); msg.text = "Choose at least one button besides Home."; return@bigButton }
+                msg.setTextColor(Pal.c("#8A5F52")); msg.text = "Saving…"
+                val layout = JSONObject().put("order", JSONArray(order)).put("hidden", JSONArray(hidden.toList())).put("nav", JSONArray(nav))
+                api(JSONObject().put("action", "adminSetHomeLayout").put("layout", layout)) { r, e ->
+                    if (r != null) { HomeLayout.save(this, r.optJSONObject("layout")); toast("Home screen saved"); loadMenuLayout() }
+                    else { msg.setTextColor(Pal.c("#DC2626")); msg.text = e ?: "Could not save." }
+                }
+            })
+            content.addView(chipButton("↺  Standard Home screen") {
+                order.clear(); order.addAll(res.getJSONArray("blocks").let { a -> (0 until a.length()).map { a.getString(it) } })
+                hidden.clear(); nav.clear(); nav.addAll(res.getJSONArray("navDefault").let { a -> (0 until a.length()).map { a.getString(it) } })
+                draw(); msg.setTextColor(Pal.c("#8A5F52")); msg.text = "Standard Home screen filled in. Press Save to apply."
+            })
+        }
+    }
+
     private fun loadMenuLayout() {
         val id = ++loadId
         content.removeAllViews()
@@ -295,6 +409,7 @@ class AdminActivity : AppCompatActivity() {
                 for ((g, _) in groups) { work[g] = listOfKeys(std, g); }
                 draw(); msg.setTextColor(Pal.c("#8A5F52")); msg.text = "Standard order filled in. Press Save to apply."
             })
+            addHomeLayoutSection(id)
         }
     }
 

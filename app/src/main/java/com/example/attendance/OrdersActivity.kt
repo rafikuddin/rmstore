@@ -60,7 +60,7 @@ class OrdersActivity : AppCompatActivity() {
         if (!session.loggedIn) { finish(); return }
         setContentView(R.layout.activity_orders)
         setupHeader("Orders") { show() }
-        setupBottomNav(null)
+        setupNav("orders")
         content = findViewById(R.id.noticeList)
         isAdmin = AdminFlag.get(this)
         isManager = session.isManager || isAdmin

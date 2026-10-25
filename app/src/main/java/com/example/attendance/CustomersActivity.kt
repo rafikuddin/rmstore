@@ -68,7 +68,7 @@ class CustomersActivity : AppCompatActivity() {
         if (!session.loggedIn) { finish(); return }
         setContentView(R.layout.activity_notices)
         setupHeader("Customers") { show() }
-        setupBottomNav(null)
+        setupNav("customers")
         content = findViewById(R.id.noticeList)
         isAdmin = AdminFlag.get(this)
         isManager = session.isManager || isAdmin

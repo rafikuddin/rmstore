@@ -46,6 +46,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.tileTarget).setOnClickListener { open(TargetActivity::class.java) }
         findViewById<android.view.View>(R.id.tileSurvey).setOnClickListener { open(SurveyActivity::class.java) }
         findViewById<android.view.View>(R.id.cardNotice).setOnClickListener { open(NoticesActivity::class.java) }
+        findViewById<android.view.View>(R.id.tileOrders).setOnClickListener { open(OrdersActivity::class.java) }
+        findViewById<android.view.View>(R.id.tileCustomers).setOnClickListener { open(CustomersActivity::class.java) }
+        HomeLayout.apply(this)
         findViewById<android.view.View>(R.id.cardUpdate).setOnClickListener { pendingUpdate?.let { AppUpdate.offer(this, it) } }
         Thread { AppUpdate.cleanUp(applicationContext) }.start()     // a downloaded APK from an earlier update is no longer needed
         setupBottomNav(Tab.HOME)
@@ -451,7 +454,6 @@ class MainActivity : AppCompatActivity() {
                 else -> { tvStatus.text = "⏳ Not marked yet"; tvStatus.setTextColor(Pal.c("#DC2626")) }
             }
             tvMonth.text = "Present: $present day(s) (26th–25th)" + (if (absent > 0) "  ·  Absent: $absent" else "")
-            val manager = if (res.optBoolean("isManager")) android.view.View.VISIBLE else android.view.View.GONE
             session.isManager = res.optBoolean("isManager")
             AdminFlag.set(this, res.optBoolean("isAdmin"))
             MenuLayout.save(this, res.optJSONObject("menuLayout"))
@@ -459,7 +461,9 @@ class MainActivity : AppCompatActivity() {
             showAvatar(res.optString("myPhoto"))
             showNotices(res.optJSONArray("notices"))
             showUpdate(res.optJSONObject("appUpdate"))
-            findViewById<android.view.View>(R.id.navTeam).visibility = manager
+            HomeLayout.save(this, res.optJSONObject("homeLayout"))
+            HomeLayout.apply(this)
+            setupBottomNav(Tab.HOME)
             showTodayDetail(todayRecord)
             res.optJSONArray("balance")?.let { showBalance(it) }
             // A night is named by the date its evening started, so between midnight and 6 AM "tonight" is still yesterday's date.

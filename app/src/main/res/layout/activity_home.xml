@@ -80,10 +80,10 @@
     <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
         android:fillViewport="true" android:scrollbars="none">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:paddingBottom="20dp">
+            android:id="@+id/homeContent" android:orientation="vertical" android:paddingBottom="20dp">
 
             <!-- Today's status -->
-            <com.google.android.material.card.MaterialCardView
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardToday"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="2dp"
                 app:cardCornerRadius="24dp" app:cardElevation="6dp">
@@ -125,7 +125,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Big white pill buttons (like Send / Request in the concept) -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            <LinearLayout android:id="@+id/rowQuick" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="14dp">
                 <com.google.android.material.button.MaterialButton android:id="@+id/btnQuickAttendance"
@@ -190,10 +190,10 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Quick actions: pastel gradient tiles with a white round icon -->
-            <TextView android:text="Quick Actions" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
+            <TextView android:id="@+id/hdrActions" android:text="Quick Actions" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/ink"
                 android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp"
                 android:layout_width="match_parent" android:layout_height="wrap_content" />
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            <LinearLayout android:id="@+id/rowTiles" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="10dp">
                 <LinearLayout android:id="@+id/tileNight" android:orientation="vertical" android:gravity="center"
                     android:background="@drawable/bg_tile_lilac" android:clickable="true" android:focusable="true"
@@ -265,9 +265,45 @@
                 <TextView android:text="›" android:textSize="26sp" android:textColor="@color/muted"
                     android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
+            <LinearLayout android:id="@+id/tileOrders" android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/bg_tile_peach" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="76dp"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+                android:paddingStart="14dp" android:paddingEnd="14dp" android:elevation="3dp">
+                <TextView android:text="🛒" android:textSize="26sp" android:gravity="center"
+                    android:background="@drawable/bg_action_icon"
+                    android:layout_width="58dp" android:layout_height="58dp" />
+                <LinearLayout android:orientation="vertical" android:layout_marginStart="14dp"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content">
+                    <TextView android:text="Orders" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:text="Create orders and follow their approval" android:textSize="12sp" android:textColor="@color/muted"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <TextView android:text="›" android:textSize="26sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/tileCustomers" android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/bg_tile_lilac" android:clickable="true" android:focusable="true"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="76dp"
+                android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="12dp"
+                android:paddingStart="14dp" android:paddingEnd="14dp" android:elevation="3dp">
+                <TextView android:text="🏪" android:textSize="26sp" android:gravity="center"
+                    android:background="@drawable/bg_action_icon"
+                    android:layout_width="58dp" android:layout_height="58dp" />
+                <LinearLayout android:orientation="vertical" android:layout_marginStart="14dp"
+                    android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content">
+                    <TextView android:text="Customers" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/ink"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:text="Request and view approved customers" android:textSize="12sp" android:textColor="@color/muted"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                </LinearLayout>
+                <TextView android:text="›" android:textSize="26sp" android:textColor="@color/muted"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <!-- Leave balance -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            <LinearLayout android:id="@+id/hdrBalance" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
                 android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp">
                 <TextView android:id="@+id/tvBalHeading" android:text="LEAVE BALANCE" android:textSize="13sp" android:textStyle="bold"
@@ -276,7 +312,7 @@
                 <TextView android:id="@+id/tvBalUsed" android:text="Used 0" android:textSize="13sp" android:textColor="@color/muted"
                     android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
-            <com.google.android.material.card.MaterialCardView
+            <com.google.android.material.card.MaterialCardView android:id="@+id/cardBalance"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="8dp"
                 app:cardCornerRadius="24dp" app:cardElevation="3dp">
@@ -334,7 +370,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Night hold this month -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            <LinearLayout android:id="@+id/hdrNight" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:gravity="center_vertical"
                 android:layout_marginStart="22dp" android:layout_marginEnd="22dp" android:layout_marginTop="22dp">
                 <TextView android:id="@+id/tvNightHeading" android:text="NIGHT HOLD · THIS MONTH" android:textSize="13sp" android:textStyle="bold"
